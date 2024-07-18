@@ -14,6 +14,13 @@ class StorePollingRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        return $this->merge([
+            'status' => 0
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,6 +33,7 @@ class StorePollingRequest extends FormRequest
             'candidate_votes.*' => 'required',
             'invalid_votes' => 'required',
             'c1' => 'required|image|max:2048',
+            'status' => 'in:0,1'
         ];
     }
 }
