@@ -12,7 +12,8 @@
                     <div class="card-body">
                         <h5 class="card-title">Edit Data Pasangan Calon</h5>
                         <h6 class="card-subtitle text-muted">Halaman Mengubah Data Pasangan Calon</h6>
-                        <form class="my-4" action="{{ route('admin.candidate.update', $candidate->id) }}" method="POST">
+                        <form class="my-4" action="{{ route('admin.candidate.update', $candidate->id) }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 

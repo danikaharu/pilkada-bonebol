@@ -24,7 +24,10 @@ class StoreCandidateRequest extends FormRequest
         return [
             'number' => 'required|numeric|max:255',
             'regional_head' => 'required|string|max:255',
-            'deputy_head' => 'required|string|max:255'
+            'deputy_head' => 'required|string|max:255',
+            'type' => 'required|in:1,2',
+            'candidate_pair' => 'string|max:255',
+            'photo' => 'required|max:1024',
         ];
     }
 }

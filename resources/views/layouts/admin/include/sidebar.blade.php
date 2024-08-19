@@ -50,19 +50,16 @@
                 <div data-i18n="Basic">TPS</div>
             </a>
         </li>
-        <!-- Components -->
+
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Pasangan Calon</span>
         </li>
-        <!-- Cards -->
-
-        <!-- User interface -->
         <li class="menu-item {{ request()->is('admin/candidate', 'admin/candidate/*') ? ' active' : '' }}">
             <a href="{{ route('admin.candidate.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user-circle"></i>
                 <div data-i18n="Basic">Pasangan Calon</div>
             </a>
         </li>
-        <!-- Forms & Tables -->
+
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Perolehan Suara</span>
         </li>
         <li class="menu-item {{ request()->is('admin/polling/create') ? ' active' : '' }}">
@@ -81,6 +78,22 @@
             <a href="{{ route('admin.polling.graphic') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-doughnut-chart"></i>
                 <div data-i18n="Basic">Grafik Perolehan Suara</div>
+            </a>
+        </li>
+
+        <!-- Pengguna -->
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Pengguna</span>
+        </li>
+        <li class="menu-item ">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Basic">Pengguna</div>
+            </a>
+        </li>
+        <li class="menu-item ">
+            <a href="#" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-user-account"></i>
+                <div data-i18n="Basic">Role</div>
             </a>
         </li>
     </ul>

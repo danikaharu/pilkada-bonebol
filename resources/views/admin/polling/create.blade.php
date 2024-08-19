@@ -35,24 +35,34 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kecamatan</label>
                                             <select id="kecamatan" name="" class="form-select col-12 kecamatan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kelurahan</label>
                                             <select id="kelurahan" name="" class="form-select col-12 kelurahan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">TPS</label>
                                             <select id="tps" name="" class="form-select col-12 tps">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Pemilihan</label>
+                                            <select id="type" name="type" class="form-select col-12">
+                                                <option value="">-- Pilih Pemilihan --</option>
+                                                <option value="1">Gubernur</option>
+                                                <option value="2">Kepala Daerah</option>
                                             </select>
                                         </div>
                                     </div>
@@ -81,15 +91,8 @@
                                     <h5>Tambah Perolehan Suara :</h5>
                                     <form class="my-4" id="pollingForm">
                                         <input type="hidden" id="selectedTps" name="polling_station_id">
-                                        @for ($i = 1; $i <= $candidates; $i++)
-                                            <div class="mb-3">
-                                                <label class="form-label paslon{{ $i }}">Suara Paslon
-                                                    {{ $i }}</label>
-                                                <input type="number" id="paslon{{ $i }}"
-                                                    name="candidate_votes[]" class="form-control"
-                                                    placeholder="Masukan jumlah Suara" />
-                                            </div>
-                                        @endfor
+                                        <input type="hidden" id="selectedPemilihan" name="type">
+                                        <div id="candidateInputs"></div>
                                         <div class="mb-3">
                                             <label class="form-label">Suara Tidak Sah / Suara Rusak</label>
                                             <input type="number" name="invalid_votes"
@@ -216,11 +219,42 @@
                 });
             });
 
+            $('#type').on('change', function() {
+                var type = this.value;
+
+                $.ajax({
+                    url: "{{ route('admin.polling.fetchCandidate') }}",
+                    type: "POST",
+                    data: {
+                        type: type,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(result) {
+                        $('#candidateInputs').html(''); // Kosongkan form
+                        for (let i = 1; i <= result.candidates; i++) {
+                            $('#candidateInputs').append(`
+                        <div class="mb-3">
+                            <label class="form-label">Suara Paslon ` + result.candidates + `</label>
+                            <input type="number" name="candidate_votes[]" class="form-control" placeholder="Masukan jumlah Suara" />
+                        </div>
+                    `);
+                        }
+                    }
+                });
+            });
+
+            //  Nilai TPS
             $('#tps').on('change', function() {
                 var selectedTps = $(this).val();
 
-                // Menyalin nilai TPS ke input hidden
                 $('#selectedTps').val(selectedTps);
+            });
+
+            //  Nilai Pemilihan
+            $('#type').on('change', function() {
+                var selectedPemilihan = $(this).val();
+
+                $('#selectedPemilihan').val(selectedPemilihan);
             });
         });
 

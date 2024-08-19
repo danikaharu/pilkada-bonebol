@@ -36,24 +36,34 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kecamatan</label>
                                             <select name="" id="kecamatan" class="form-select col-12 kecamatan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kelurahan</label>
                                             <select name="" id="kelurahan" class="form-select col-12 kelurahan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">TPS</label>
                                             <select name="" id="tps" class="form-select col-12 tps">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Pemilihan</label>
+                                            <select id="type" name="type" class="form-select col-12">
+                                                <option value="">-- Pilih Pemilihan --</option>
+                                                <option value="1">Gubernur</option>
+                                                <option value="2">Kepala Daerah</option>
                                             </select>
                                         </div>
                                     </div>
@@ -190,12 +200,14 @@
             event.preventDefault();
 
             var selectedTps = $('#tps').val();
+            var selectedType = $('#type').val();
 
             $.ajax({
                 url: "{{ route('admin.polling.fetchPollingGraphic') }}",
                 type: "POST",
                 data: {
                     polling_station_id: selectedTps,
+                    type: selectedType,
                     _token: '{{ csrf_token() }}'
                 },
                 dataType: 'json',
@@ -217,13 +229,12 @@
 
                     var series = candidateVotes.concat(invalidVotes);
 
-                    console.log(series);
-
                     var labels = [];
-                    response.candidates.forEach(function(candidate) {
-                        labels.push(candidate.regional_head + '-' + candidate.deputy_head);
+                    response.candidates.forEach(function(candidate, index) {
+                        labels.push(candidate.regional_head + '-' + candidate.deputy_head +
+                            ' (' + candidateVotes[index] + ')');
                     });
-                    labels.push('Suara Tidak Sah');
+                    labels.push('Suara Tidak Sah (' + invalidVotes + ')');
 
                     var options = {
                         series: series,

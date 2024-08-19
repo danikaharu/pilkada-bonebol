@@ -9,7 +9,7 @@ class Polling extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['polling_station_id', 'candidate_votes', 'invalid_votes', 'c1', 'status'];
+    protected $fillable = ['polling_station_id', 'type', 'candidate_votes', 'invalid_votes', 'c1', 'status'];
 
     public function polling_station()
     {

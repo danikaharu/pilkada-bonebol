@@ -38,6 +38,7 @@
                                         <th>#</th>
                                         <th>Nomor Urut</th>
                                         <th>Pasangan Calon</th>
+                                        <th>Pemilihan</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -77,6 +78,9 @@
                         data: 'number',
                     }, {
                         data: 'candidate',
+                    },
+                    {
+                        data: 'type',
                     },
                     {
                         data: 'action',

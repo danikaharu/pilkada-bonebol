@@ -12,7 +12,8 @@
                     <div class="card-body">
                         <h5 class="card-title">Tambah Data Pasangan Calon</h5>
                         <h6 class="card-subtitle text-muted">Halaman Menambah Data Pasangan Calon</h6>
-                        <form class="my-4" action="{{ route('admin.candidate.store') }}" method="POST">
+                        <form class="my-4" action="{{ route('admin.candidate.store') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
 
                             @include('admin.candidate.include.form')

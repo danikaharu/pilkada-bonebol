@@ -22,6 +22,9 @@ class CandidateController extends Controller
                 ->addColumn('candidate', function ($row) {
                     return $row->candidate;
                 })
+                ->addColumn('type', function ($row) {
+                    return $row->type();
+                })
                 ->addColumn('action', 'admin.candidate.include.action')
                 ->rawColumns(['action'])
                 ->make(true);
@@ -45,6 +48,14 @@ class CandidateController extends Controller
     {
         try {
             $attr = $request->validated();
+
+            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+                $filename = $request->file('photo')->hashName();
+
+                $request->file('photo')->storeAs('upload/paslon/', $filename, 'public');
+
+                $attr['photo'] = $filename;
+            }
 
             Candidate::create($attr);
 
@@ -77,6 +88,14 @@ class CandidateController extends Controller
     {
         try {
             $attr = $request->validated();
+
+            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+                $filename = $request->file('photo')->hashName();
+
+                $request->file('photo')->storeAs('upload/paslon/', $filename, 'public');
+
+                $attr['photo'] = $filename;
+            }
 
             $candidate->update($attr);
 

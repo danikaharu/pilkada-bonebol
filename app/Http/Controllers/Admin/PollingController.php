@@ -31,9 +31,8 @@ class PollingController extends Controller
     public function create()
     {
         $electoralDistricts = ElectoralDistrict::all();
-        $candidates = Candidate::count();
 
-        return view('admin.polling.create', compact('electoralDistricts', 'candidates'));
+        return view('admin.polling.create', compact('electoralDistricts'));
     }
 
     /**
@@ -131,13 +130,22 @@ class PollingController extends Controller
         return response()->json($data);
     }
 
+    public function fetchCandidate(Request $request)
+    {
+        $candidates = Candidate::where('type', $request->type)->count();
+        return response()->json(['candidates' => $candidates]);
+    }
+
     public function fetchPollingResult(Request $request)
     {
         $polling_station_id = $request->input('polling_station_id');
+        $type = $request->input('type');
 
-        $pollingResult = Polling::where('polling_station_id', $polling_station_id)->first();
+        $pollingResult = Polling::where('polling_station_id', $polling_station_id)
+            ->where('type', $type)
+            ->first();
 
-        $candidates = Candidate::all();
+        $candidates = Candidate::where('type', $type)->get();
 
         return response()->json([
             'pollingResult' => $pollingResult,
@@ -148,10 +156,14 @@ class PollingController extends Controller
     public function fetchPollingGraphic(Request $request)
     {
         $polling_station_id = $request->input('polling_station_id');
+        $type = $request->input('type');
 
-        $pollingResult = Polling::where('polling_station_id', $polling_station_id)->whereNot('status', 0)->first();
+        $pollingResult = Polling::where('polling_station_id', $polling_station_id)
+            ->where('type', $type)
+            ->whereNot('status', 0)
+            ->first();
 
-        $candidates = Candidate::all();
+        $candidates = Candidate::where('type', $type)->get();
 
         return response()->json([
             'pollingResult' => $pollingResult,

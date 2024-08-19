@@ -54,24 +54,34 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kecamatan</label>
                                             <select id="kecamatan" name="" class="form-select col-12 kecamatan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">Kelurahan</label>
                                             <select id="kelurahan" name="" class="form-select col-12 kelurahan">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 col-sm-12">
+                                    <div class="col-md-2 col-sm-12">
                                         <div class="mb-3">
                                             <label class="form-label">TPS</label>
                                             <select id="tps" name="" class="form-select col-12 tps">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Pemilihan</label>
+                                            <select id="type" name="type" class="form-select col-12">
+                                                <option value="">-- Pilih Pemilihan --</option>
+                                                <option value="1">Gubernur</option>
+                                                <option value="2">Kepala Daerah</option>
                                             </select>
                                         </div>
                                     </div>
@@ -225,25 +235,20 @@
                     }
                 });
             });
-
-            $('#tps').on('change', function() {
-                var selectedTps = $(this).val();
-
-                // Menyalin nilai TPS ke input hidden
-                $('#selectedTps').val(selectedTps);
-            });
         });
 
         $('#viewResult').on('click', function() {
             event.preventDefault();
 
             var selectedTps = $('#tps').val();
+            var selectedType = $('#type').val();
 
             $.ajax({
                 url: "{{ route('admin.polling.fetchPollingResult') }}",
                 type: "POST",
                 data: {
                     polling_station_id: selectedTps,
+                    type: selectedType,
                     _token: '{{ csrf_token() }}'
                 },
                 dataType: 'json',

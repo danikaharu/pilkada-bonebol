@@ -33,6 +33,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth'], fu
     Route::post('/pollings/fetchSubdistrict', ['App\Http\Controllers\Admin\PollingController', 'fetchSubdistrict'])->name('polling.fetchSubdistrict');
     Route::post('/pollings/fetchVillage', ['App\Http\Controllers\Admin\PollingController', 'fetchVillage'])->name('polling.fetchVillage');
     Route::post('/pollings/fetchPollingStation', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingStation'])->name('polling.fetchPollingStation');
+    Route::post('/pollings/fetchCandidate', ['App\Http\Controllers\Admin\PollingController', 'fetchCandidate'])->name('polling.fetchCandidate');
     Route::post('/pollings/fetchPollingResult', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingResult'])->name('polling.fetchPollingResult');
     Route::post('/pollings/fetchPollingGraphic', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingGraphic'])->name('polling.fetchPollingGraphic');
     Route::post('/pollings/verify', ['App\Http\Controllers\Admin\PollingController', 'verify'])->name('polling.verify');

@@ -30,6 +30,7 @@ class StorePollingRequest extends FormRequest
     {
         return [
             'polling_station_id' => 'exists:polling_stations,id',
+            'type' => 'in:1,2',
             'candidate_votes.*' => 'required',
             'invalid_votes' => 'required',
             'c1' => 'required|image|max:2048',
