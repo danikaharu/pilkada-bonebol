@@ -6,7 +6,7 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth'], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
     // Dashboard
     Route::get('/dashboard', ['App\Http\Controllers\Admin\DashboardController', 'index'])->name('dashboard');
@@ -38,4 +38,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth'], fu
     Route::post('/pollings/fetchPollingGraphic', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingGraphic'])->name('polling.fetchPollingGraphic');
     Route::post('/pollings/verify', ['App\Http\Controllers\Admin\PollingController', 'verify'])->name('polling.verify');
     Route::get('/pollings/export/excel', ['App\Http\Controllers\Admin\PollingController', 'exportExcel'])->name('polling.exportExcel');
+
+    // User
+    Route::resource('/user', App\Http\Controllers\Admin\UserController::class);
+
+    // Role
+    Route::resource('/role', App\Http\Controllers\Admin\RoleController::class);
 });

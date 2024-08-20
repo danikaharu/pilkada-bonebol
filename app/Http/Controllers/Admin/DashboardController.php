@@ -21,6 +21,6 @@ class DashboardController extends Controller
         $totalPollingVerified = Polling::where('status', 1)->count();
         $totalPollingUnverified = Polling::where('status', 0)->count();
 
-        return view('admin.dashboard', compact('totalElectoralDistrict', 'totalSubdistrict', 'totalVillage', 'totalPollingStation', 'totalPollingVerified', 'totalPollingUnverified'));
+        return view('admin.dashboard.index', compact('totalElectoralDistrict', 'totalSubdistrict', 'totalVillage', 'totalPollingStation', 'totalPollingVerified', 'totalPollingUnverified'));
     }
 }

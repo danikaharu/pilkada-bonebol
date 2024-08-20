@@ -13,10 +13,23 @@ use App\Models\PollingStation;
 use App\Models\Subdistrict;
 use App\Models\Village;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PollingController extends Controller
+class PollingController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view polling'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create polling'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit polling'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete polling'), only: ['destroy']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('verify polling'), only: ['verify']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('export polling'), only: ['export']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

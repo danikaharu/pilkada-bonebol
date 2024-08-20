@@ -28,9 +28,11 @@
                     <div class="card-body">
                         <h5 class="card-title">Data Pasangan Calon</h5>
                         <h6 class="card-subtitle text-muted">Berikut data Pasangan Calon yang telah dimasukan</h6>
-                        <a href="{{ route('admin.candidate.create') }}" class="btn btn-primary my-4 text-white"><i
-                                class='bx bx-plus-circle'></i>
-                            Tambah Pasangan Calon</a>
+                        @can('create candidate')
+                            <a href="{{ route('admin.candidate.create') }}" class="btn btn-primary my-4 text-white"><i
+                                    class='bx bx-plus-circle'></i>
+                                Tambah Pasangan Calon</a>
+                        @endcan
                         <div class="table-responsive text-nowrap">
                             <table id="listData" class="table table-striped">
                                 <thead>

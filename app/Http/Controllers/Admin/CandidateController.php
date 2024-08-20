@@ -7,9 +7,21 @@ use App\Http\Requests\StoreCandidateRequest;
 use App\Http\Requests\UpdateCandidateRequest;
 use App\Models\Candidate;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CandidateController extends Controller
+class CandidateController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view candidate'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create candidate'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit candidate'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete candidate'), only: ['destroy']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

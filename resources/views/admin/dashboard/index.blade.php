@@ -10,11 +10,12 @@
                     <div class="d-flex align-items-end row">
                         <div class="col-sm-7">
                             <div class="card-body">
-                                <h5 class="card-title text-primary">Hai Admin! 💕</h5>
+                                <h5 class="card-title text-primary">Hai {{ auth()->user()->name }}! 💕</h5>
                                 <p class="mb-4">
-                                    You have done <span class="fw-bold">72%</span> more sales today.
-                                    Check your new badge in
-                                    your profile.
+                                    Di halaman Dashboard Admin Pilkada ini, Anda dapat dengan
+                                    mudah mengelola data penting seperti kelurahan, kecamatan, daerah pemilihan (dapil),
+                                    TPS, dan pasangan calon. Semuanya dirancang untuk mempermudah tugas Anda dalam menambah,
+                                    mengedit, dan menghapus data sesuai kebutuhan.
                                 </p>
                             </div>
                         </div>

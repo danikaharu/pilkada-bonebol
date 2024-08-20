@@ -8,9 +8,22 @@ use App\Http\Requests\UpdatePollingStationRequest;
 use App\Models\PollingStation;
 use App\Models\Village;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PollingStationController extends Controller
+class PollingStationController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view polling station'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create polling station'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit polling station'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete polling station'), only: ['destroy']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

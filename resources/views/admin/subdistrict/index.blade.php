@@ -28,9 +28,11 @@
                     <div class="card-body">
                         <h5 class="card-title">Data Kecamatan</h5>
                         <h6 class="card-subtitle text-muted">Berikut data Kecamatan yang telah dimasukan</h6>
-                        <a href="{{ route('admin.subdistrict.create') }}" class="btn btn-primary my-4 text-white"><i
-                                class='bx bx-plus-circle'></i>
-                            Tambah Kecamatan</a>
+                        @can('create subdistrict')
+                            <a href="{{ route('admin.subdistrict.create') }}" class="btn btn-primary my-4 text-white"><i
+                                    class='bx bx-plus-circle'></i>
+                                Tambah Kecamatan</a>
+                        @endcan
                         <div class="table-responsive text-nowrap">
                             <table id="listData" class="table table-striped">
                                 <thead>

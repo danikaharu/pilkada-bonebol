@@ -7,10 +7,21 @@ use App\Http\Requests\StoreVillageRequest;
 use App\Http\Requests\UpdateVillageRequest;
 use App\Models\Subdistrict;
 use App\Models\Village;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Yajra\DataTables\Facades\DataTables;
 
-class VillageController extends Controller
+class VillageController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view village'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create village'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit village'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete village'), only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */

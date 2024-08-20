@@ -7,10 +7,23 @@ use App\Http\Requests\StoreSubdistrictRequest;
 use App\Http\Requests\UpdateSubdistrictRequest;
 use App\Models\ElectoralDistrict;
 use App\Models\Subdistrict;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Yajra\DataTables\Facades\DataTables;
 
-class SubdistrictController extends Controller
+class SubdistrictController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view subdistrict'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create subdistrict'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit subdistrict'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete subdistrict'), only: ['destroy']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */

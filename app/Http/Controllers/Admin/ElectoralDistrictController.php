@@ -7,9 +7,21 @@ use App\Http\Requests\StoreElectoralDistrictRequest;
 use App\Http\Requests\UpdateElectoralDistrictRequest;
 use App\Models\ElectoralDistrict;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ElectoralDistrictController extends Controller
+class ElectoralDistrictController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('view electoral district'), only: ['index']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create electoral district'), only: ['create', 'store']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit electoral district'), only: ['edit', 'update']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete electoral district'), only: ['destroy']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
