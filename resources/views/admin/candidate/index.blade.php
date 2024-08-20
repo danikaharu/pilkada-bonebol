@@ -54,7 +54,7 @@
 @endsection
 
 @push('script')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js" defer></script>
     <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js" defer></script>
     <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js" defer></script>
@@ -93,24 +93,24 @@
             });
 
             // Sweet Alert Delete
-            // $("body").on('submit', `form[role='alert']`, function(event) {
-            //     event.preventDefault();
+            $("body").on('submit', `form[role='alert']`, function(event) {
+                event.preventDefault();
 
-            //     Swal.fire({
-            //         title: $(this).attr('alert-title'),
-            //         text: $(this).attr('alert-text'),
-            //         icon: "warning",
-            //         allowOutsideClick: false,
-            //         showCancelButton: true,
-            //         cancelButtonText: "Batal",
-            //         reverseButton: true,
-            //         confirmButtonText: "Hapus",
-            //     }).then((result) => {
-            //         if (result.isConfirmed) {
-            //             event.target.submit();
-            //         }
-            //     })
-            // });
+                Swal.fire({
+                    title: $(this).attr('alert-title'),
+                    text: $(this).attr('alert-text'),
+                    icon: "warning",
+                    allowOutsideClick: false,
+                    showCancelButton: true,
+                    cancelButtonText: "Batal",
+                    reverseButton: true,
+                    confirmButtonText: "Hapus",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        event.target.submit();
+                    }
+                })
+            });
         });
     </script>
 @endpush

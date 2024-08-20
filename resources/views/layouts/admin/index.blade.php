@@ -95,6 +95,8 @@
     <script src="{{ asset('template/vendor/js/menu.js') }}"></script>
     <!-- endbuild -->
 
+    @include('sweetalert::alert', ['cdn' => 'https://cdn.jsdelivr.net/npm/sweetalert2@9'])
+
     <!-- Main JS -->
     <script src="{{ asset('template/js/main.js') }}"></script>
 

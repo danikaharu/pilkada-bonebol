@@ -1,6 +1,6 @@
 @extends('layouts.admin.index')
 
-@section('title', 'Suara')
+@section('title', 'Input Suara')
 
 @push('style')
     <style>
@@ -12,13 +12,13 @@
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h5 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Beranda / </span> Tambah Suara</h5>
+        <h5 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Beranda / </span> Input Suara</h5>
         <div class="row">
             <div class="col-lg-12 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Tambah Data Suara</h5>
-                        <h6 class="card-subtitle text-muted">Halaman Menambah Data Suara</h6>
+                        <h5 class="card-title">Input Suara</h5>
+                        <h6 class="card-subtitle text-muted">Halaman Input Suara</h6>
                         <div class="my-4">
                             <form action="">
                                 <div class="row">
