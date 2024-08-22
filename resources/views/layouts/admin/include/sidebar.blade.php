@@ -23,10 +23,10 @@
         </li>
 
 
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Daerah Pemilihan</span>
-        </li>
         @can('view electoral district')
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Daerah Pemilihan</span>
+            </li>
             <li
                 class="menu-item {{ request()->is('admin/electoraldistrict', 'admin/electoraldistrict/*') ? ' active' : '' }}">
                 <a href="{{ route('admin.electoraldistrict.index') }}" class="menu-link">
@@ -102,10 +102,10 @@
             </li>
         @endcan
 
-        <!-- Pengguna -->
-        <li class="menu-header small text-uppercase"><span class="menu-header-text">Pengguna</span>
-        </li>
         @can('view user')
+            <!-- Pengguna -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Pengguna</span>
+            </li>
             <li class="menu-item {{ request()->is('admin/user', 'admin/user/*') ? ' active' : '' }}">
                 <a href="{{ route('admin.user.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-user"></i>
