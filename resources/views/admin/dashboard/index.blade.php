@@ -11,12 +11,24 @@
                         <div class="col-sm-7">
                             <div class="card-body">
                                 <h5 class="card-title text-primary">Hai {{ auth()->user()->name }}! 💕</h5>
-                                <p class="mb-4">
-                                    Di halaman Dashboard Admin Pilkada ini, Anda dapat dengan
-                                    mudah mengelola data penting seperti kelurahan, kecamatan, daerah pemilihan (dapil),
-                                    TPS, dan pasangan calon. Semuanya dirancang untuk mempermudah tugas Anda dalam menambah,
-                                    mengedit, dan menghapus data sesuai kebutuhan.
-                                </p>
+
+                                @hasrole('Super Admin')
+                                    <p class="mb-4">
+                                        Di halaman Dashboard Admin Pilkada ini, Anda dapat dengan
+                                        mudah mengelola data penting seperti kelurahan, kecamatan, daerah pemilihan (dapil),
+                                        TPS, dan pasangan calon. Semuanya dirancang untuk mempermudah tugas Anda dalam menambah,
+                                        mengedit, dan menghapus data sesuai kebutuhan.
+                                    </p>
+                                @endhasrole
+                                @hasrole('Operator')
+                                    <p class="mb-4">
+                                        Di halaman Dashboard Operator Pilkada ini, Anda dapat dengan mudah mengakses dan
+                                        memperbarui data terkait pelaksanaan Pilkada, seperti kelurahan, kecamatan, dapil,
+                                        TPS, dan pasangan calon. Dashboard ini dirancang untuk mendukung tugas Anda dalam
+                                        memastikan kelancaran proses pengolahan data yang akurat dan up-to-date.
+                                    </p>
+                                @endhasrole
+
                             </div>
                         </div>
                         <div class="col-sm-5 text-center text-sm-left">

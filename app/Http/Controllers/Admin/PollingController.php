@@ -87,7 +87,8 @@ class PollingController extends Controller implements HasMiddleware
      */
     public function edit(Polling $polling)
     {
-        //
+        $candidates = Candidate::where('type', $polling->type)->count();
+        return view('admin.polling.edit', compact('polling', 'candidates'));
     }
 
     /**
@@ -95,7 +96,38 @@ class PollingController extends Controller implements HasMiddleware
      */
     public function update(UpdatePollingRequest $request, Polling $polling)
     {
-        //
+        try {
+            $attr = $request->validated();
+
+            if ($request->file('c1') && $request->file('c1')->isValid()) {
+
+                $path = storage_path('app/public/upload/c1/');
+                $filename = $request->file('c1')->hashName();
+
+                if (!file_exists($path)) {
+                    mkdir($path, 0777, true);
+                }
+
+                $request->file('c1')->storeAs('upload/c1/', $filename, 'public');
+
+                // delete c1 from storage
+                if ($polling->c1 != null && file_exists($path . $polling->c1)) {
+                    unlink($path . $polling->c1);
+                }
+
+                $attr['c1'] = $filename;
+            }
+
+            $attr['status'] = 0;
+
+            $polling->update($attr);
+
+            return redirect()
+                ->back()
+                ->with('success', __('Data berhasil diupdate.'));
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
     }
 
     /**

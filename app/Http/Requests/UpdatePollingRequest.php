@@ -11,7 +11,7 @@ class UpdatePollingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdatePollingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'polling_station_id' => 'exists:polling_stations,id',
+            'type' => 'in:1,2',
+            'candidate_votes.*' => 'required',
+            'invalid_votes' => 'required',
+            'c1' => 'nullable|image|max:2048',
+            'status' => 'in:0,1'
         ];
     }
 }

@@ -125,7 +125,6 @@
                                         <button type="submit" class="btn btn-success btn-accept"><i
                                                 class='bx bx-check-square'></i>
                                             Terima</button>
-
                                         <button type="submit" class="btn btn-danger btn-reject"> <i
                                                 class='bx bxs-x-square'></i>Tolak</button>
                                     </form>
@@ -139,7 +138,6 @@
                                                 style="display:block; margin:0 auto;width:100%">
                                         </label>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -303,8 +301,6 @@
                     var statusBadge;
                     var status = response.pollingResult.status;
 
-                    console.log(status);
-
                     if (status == 0) {
                         statusBadge = '<span class="badge bg-label-danger">Belum Diverifikasi</span>';
                     } else if (status == 1) {
@@ -320,7 +316,19 @@
                     }
                     $('#status').html('Status: ' + statusBadge);
 
-                    // Menampilkan form yang berisi hasil perolehan suara
+                    // Jika status adalah 2, tambahkan tombol edit
+                    if (status == 2) {
+                        let pollingResultId = response.pollingResult.id;
+                        let editUrl = "{{ route('admin.polling.edit', ':id') }}".replace(':id',
+                            pollingResultId);
+
+                        let editButton = "<a href='" + editUrl +
+                            "' class='btn btn-warning btn-edit'><i class='bx bx-edit-alt'></i> Edit</a>";
+                        $('#status').append(' ' +
+                            editButton); // Append tombol edit setelah status badge
+                    }
+
+                    // Menampilkan hasil suara
                     $('#form').show();
                 },
                 error: function(xhr, status, error) {
