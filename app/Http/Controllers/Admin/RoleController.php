@@ -32,7 +32,7 @@ class RoleController extends Controller implements HasMiddleware
     public function index()
     {
         if (Request::ajax()) {
-            $roles = Role::query()->get();
+            $roles = Role::where('name', '!=', 'Super Admin')->get();
 
             return DataTables::of($roles)
                 ->addIndexColumn()

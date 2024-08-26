@@ -51,7 +51,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function create()
     {
-        $roles = Role::get();
+        $roles = Role::where('name', '!=', 'Super Admin')->get();
         return view('admin.user.create', compact('roles'));
     }
 
