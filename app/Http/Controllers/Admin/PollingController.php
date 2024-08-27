@@ -15,6 +15,7 @@ use App\Models\Village;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Yajra\DataTables\Facades\DataTables;
 
 class PollingController extends Controller implements HasMiddleware
 {
@@ -25,6 +26,7 @@ class PollingController extends Controller implements HasMiddleware
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create polling'), only: ['create', 'store']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit polling'), only: ['edit', 'update']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete polling'), only: ['destroy']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result polling'), only: ['result', 'graphic']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('verify polling'), only: ['verify']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('export polling'), only: ['export']),
         ];
@@ -35,7 +37,32 @@ class PollingController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        //
+        if (request()->ajax()) {
+            $pollings = Polling::with('polling_station')->latest()->get();
+            return DataTables::of($pollings)
+                ->addIndexColumn()
+                ->addColumn('electoral_district', function ($row) {
+                    return $row->polling_station->village->subdistrict->electoral_district ? $row->polling_station->village->subdistrict->electoral_district->name : '-';
+                })
+                ->addColumn('subdistrict', function ($row) {
+                    return $row->polling_station->village->subdistrict ? $row->polling_station->village->subdistrict->name : '-';
+                })
+                ->addColumn('village', function ($row) {
+                    return $row->polling_station->village ? $row->polling_station->village->name : '-';
+                })
+                ->addColumn('polling_station', function ($row) {
+                    return $row->polling_station ? $row->polling_station->name : '-';
+                })
+                ->addColumn('type', function ($row) {
+                    return $row->type();
+                })
+                ->addColumn('status', function ($row) {
+                    return $row->status();
+                })
+                ->make(true);
+        }
+
+        return view('admin.polling.index');
     }
 
     /**
@@ -68,7 +95,7 @@ class PollingController extends Controller implements HasMiddleware
 
             Polling::create($attr);
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Data Berhasil Ditambah');
         } catch (\Throwable $th) {
             dd($th->getMessage());
         }

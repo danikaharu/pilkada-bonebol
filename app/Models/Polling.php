@@ -24,4 +24,13 @@ class Polling extends Model
             return 'BELUM DIVERIFIKASI';
         }
     }
+
+    public function type()
+    {
+        if ($this->type == 1) {
+            return 'Gubernur';
+        } else {
+            return 'Kepala Daerah';
+        }
+    }
 }

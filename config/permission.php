@@ -255,6 +255,7 @@ return [
                 'create polling',
                 'edit polling',
                 'delete polling',
+                'result polling',
                 'verify polling',
                 'export polling',
             ]

@@ -77,6 +77,15 @@
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Perolehan Suara</span>
         </li>
 
+        @can('view polling')
+            <li class="menu-item {{ request()->is('admin/polling') ? ' active' : '' }}">
+                <a href="{{ route('admin.polling.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-edit-alt"></i>
+                    <div data-i18n="Basic">Perolehan Suara</div>
+                </a>
+            </li>
+        @endcan
+
         @can('create polling')
             <li class="menu-item {{ request()->is('admin/polling/create') ? ' active' : '' }}">
                 <a href="{{ route('admin.polling.create') }}" class="menu-link">
@@ -86,7 +95,7 @@
             </li>
         @endcan
 
-        @can('view polling')
+        @can('result polling')
             <li class="menu-item {{ request()->is('admin/pollings/result') ? ' active' : '' }}">
                 <a href="{{ route('admin.polling.result') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-file"></i>
