@@ -234,7 +234,7 @@
                         for (let i = 1; i <= result.candidates; i++) {
                             $('#candidateInputs').append(`
                         <div class="mb-3">
-                            <label class="form-label">Suara Paslon ` + result.candidates + `</label>
+                            <label class="form-label">Suara Paslon ` + i + `</label>
                             <input type="number" name="candidate_votes[]" class="form-control" placeholder="Masukan jumlah Suara" />
                         </div>
                     `);

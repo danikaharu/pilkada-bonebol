@@ -28,7 +28,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Data TPS</h5>
                         <h6 class="card-subtitle text-muted">Berikut data TPS yang telah dimasukan</h6>
-                        @can('create polling station', $user)
+                        @can('create polling station')
                             <a href="{{ route('admin.pollingstation.create') }}" class="btn btn-primary my-4 text-white"><i
                                     class='bx bx-plus-circle'></i>
                                 Tambah TPS</a>
