@@ -27,7 +27,7 @@ class UpdateCandidateRequest extends FormRequest
             'deputy_head' => 'required|string|max:255',
             'type' => 'required|in:1,2',
             'candidate_pair' => 'required|string|max:255',
-            'photo' => 'required|image|max:1024',
+            'photo' => 'nullable|image|max:1024',
         ];
     }
 }
