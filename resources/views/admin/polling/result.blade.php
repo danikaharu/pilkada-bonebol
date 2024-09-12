@@ -33,8 +33,8 @@
                     <div class="card-body">
                         <h5 class="card-title header-elements">Data Hasil Perolehan Suara
                             <div class="card-title-elements ms-auto">
-                                <a href="{{ route('admin.polling.exportExcel') }}" class="btn btn-success"><i
-                                        class="bx bx-printer"></i> Cetak</a>
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#reportPolling"><i class="bx bx-printer me-1"></i>Cetak </button>
                             </div>
                         </h5>
                         <h6 class="card-subtitle text-muted">Berikut data Hasil Perolehan Suara yang telah dimasukan</h6>
@@ -147,6 +147,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Report Polling Modal -->
+    <div class="modal fade" id="reportPolling" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-simple modal-print">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel5">Cetak Laporan Pemungutan Suara</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.polling.exportExcel') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row g-6">
+                            <div class="col mb-0">
+                                <label for="startDate" class="form-label">Pemilihan</label>
+                                <select id="type" name="type" class="form-select col-12">
+                                    <option disabled selected>-- Pilih Pemilihan --</option>
+                                    <option value="1">Gubernur</option>
+                                    <option value="2">Kepala Daerah</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Cetak</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--/ Report Polling Modal -->
 @endsection
 
 @push('script')

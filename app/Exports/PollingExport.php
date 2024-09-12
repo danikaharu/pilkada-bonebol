@@ -16,7 +16,13 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
 {
     use Exportable;
 
+    protected $type;
     private $row = 0;
+
+    function __construct($type)
+    {
+        $this->type = $type;
+    }
 
     public function model()
     {
@@ -25,7 +31,7 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
 
     public function collection()
     {
-        $data = Polling::where('type', 1)->get();
+        $data = Polling::where('type', $this->type)->get();
 
         return $data;
     }
@@ -63,10 +69,17 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
             'TPS',
         ];
 
-        // Assuming candidate_votes is in JSON format like ["20","30"]
-        $votes = json_decode(Polling::first()->candidate_votes, true);
-        foreach ($votes as $index => $vote) {
-            $headings[] = "PASLON " . ($index + 1);
+        $polling = Polling::where('type', $this->type)->first();
+
+        if ($polling) {
+            // Decode JSON votes
+            $votes = json_decode($polling->candidate_votes, true);
+            $numPaslon = count($votes); // Hitung jumlah paslon
+
+            // Generate dynamic headings for the number of paslon found
+            for ($i = 0; $i < $numPaslon; $i++) {
+                $headings[] = "PASLON " . ($i + 1);
+            }
         }
 
         $headings[] = 'SUARA TIDAK SAH';
@@ -86,8 +99,8 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
     {
         return [
             AfterSheet::class    => function (AfterSheet $event) {
-                $highestColumn = $event->sheet->getHighestColumn(); // Mengambil kolom terakhir
-                $highestRow = $event->sheet->getHighestRow(); // Mengambil baris terakhir
+                $highestColumn = $event->sheet->getHighestColumn();
+                $highestRow = $event->sheet->getHighestRow();
 
                 $styleArray = [
                     'borders' => [
@@ -101,7 +114,7 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
                     ],
                 ];
 
-                $range = 'A2:' . $highestColumn . $highestRow; // Mengatur range secara dinamis untuk seluruh area yang digunakan
+                $range = 'A2:' . $highestColumn . $highestRow;
                 $event->sheet->getStyle($range)->applyFromArray($styleArray);
             },
         ];

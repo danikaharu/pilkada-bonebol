@@ -259,6 +259,12 @@ class PollingController extends Controller implements HasMiddleware
 
     public function exportExcel(Request $request)
     {
-        return (new PollingExport())->download('laporan pilkada.xlsx');
+        $type = $request->type;
+
+        if ($type) {
+            return (new PollingExport($type))->download('laporan pilkada.xlsx');
+        } else {
+            return redirect()->back()->with('toast_error', 'Maaf, tidak bisa export data');
+        }
     }
 }
