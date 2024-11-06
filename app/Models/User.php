@@ -18,8 +18,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'polling_station_id',
         'name',
         'username',
+        'phone_number',
         'email',
         'password',
     ];
@@ -45,5 +47,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function polling_station()
+    {
+        return $this->belongsTo(PollingStation::class);
     }
 }

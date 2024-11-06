@@ -15,6 +15,7 @@ use App\Models\Village;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class PollingController extends Controller implements HasMiddleware
@@ -82,6 +83,13 @@ class PollingController extends Controller implements HasMiddleware
     {
         try {
             $attr = $request->validated();
+            $user = Auth::user();
+            $pollingstation = PollingStation::find($attr['polling_station_id']);
+
+            // Jika TPS yang dipilih tidak sesuai dengan user yang login, beri pesan error
+            if ($pollingstation  !== $user->polling_station_id) {
+                return redirect()->back()->withErrors(['polling_station' => 'Anda tidak memiliki akses.']);
+            }
 
             if ($request->hasFile('c1') && $request->file('c1')->isValid()) {
                 $filename = $request->file('c1')->hashName();
@@ -97,7 +105,7 @@ class PollingController extends Controller implements HasMiddleware
 
             return redirect()->back()->with('success', 'Data Berhasil Ditambah');
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $th->getMessage()]);
         }
     }
 
@@ -153,7 +161,7 @@ class PollingController extends Controller implements HasMiddleware
                 ->back()
                 ->with('success', __('Data berhasil diupdate.'));
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $th->getMessage()]);
         }
     }
 
@@ -196,8 +204,16 @@ class PollingController extends Controller implements HasMiddleware
 
     public function fetchPollingStation(Request $request)
     {
-        $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
-            ->get(["name", "id"]);
+        $allowedPollingStation = Auth::user()->polling_station_id;
+
+        if (auth()->user()->hasRole('Operator')) {
+            $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
+                ->where('id', $allowedPollingStation)
+                ->get(["name", "id"]);
+        } else {
+            $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
+                ->get(["name", "id"]);
+        }
 
         return response()->json($data);
     }
@@ -212,7 +228,15 @@ class PollingController extends Controller implements HasMiddleware
     {
         $polling_station_id = $request->input('polling_station_id');
         $type = $request->input('type');
+        $userPollingStation = Auth::user()->polling_station_id;
 
+        if (auth()->user()->hasRole('Operator') && $polling_station_id != $userPollingStation) {
+            return response()->json([
+                'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
+            ], 403);
+        }
+
+        // Mengambil hasil pemilihan dan kandidat
         $pollingResult = Polling::where('polling_station_id', $polling_station_id)
             ->where('type', $type)
             ->first();
@@ -229,6 +253,13 @@ class PollingController extends Controller implements HasMiddleware
     {
         $polling_station_id = $request->input('polling_station_id');
         $type = $request->input('type');
+        $userPollingStation = Auth::user()->polling_station_id;
+
+        if (auth()->user()->hasRole('Operator') && $polling_station_id != $userPollingStation) {
+            return response()->json([
+                'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
+            ], 403);
+        }
 
         $pollingResult = Polling::where('polling_station_id', $polling_station_id)
             ->where('type', $type)

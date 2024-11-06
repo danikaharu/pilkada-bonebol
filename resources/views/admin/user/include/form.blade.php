@@ -1,3 +1,7 @@
+@push('style')
+    <link rel="stylesheet" href="{{ asset('template/vendor/libs/select2/select2.css') }}">
+@endpush
+
 <div class="row">
     <div class="col-lg-6 col-md-12 mb-3">
         <label class="form-label">Nama</label>
@@ -48,8 +52,8 @@
         @enderror
     </div>
     <div class="col-lg-6 col-md-12 mb-3">
+        <label class="form-label">{{ __('Konfirmasi Password') }}</label>
         <div class="form-group">
-            <label for="password-confirmation">{{ __('Konfirmasi Password') }}</label>
             <input type="password" name="password_confirmation" id="password-confirmation" class="form-control"
                 placeholder="{{ __('Password Confirmation') }}" autocomplete="new-password">
         </div>
@@ -71,15 +75,53 @@
             <div class="small text-danger">{{ $message }}</div>
         @enderror
     </div>
+    <div class="col-lg-6 col-md-12 mb-3">
+        <label class="form-label">No. Telpon</label>
+        <div class="input-group input-group-merge">
+            <span class="input-group-text @error('phone_number')
+                invalid
+            @enderror"><i
+                    class="bx bx-envelope"></i></span>
+            <input type="text"
+                class="form-control @error('phone_number')
+                invalid
+            @enderror"
+                placeholder="Nomor Telepon" value="{{ isset($user) ? $user->phone_number : old('phone_number') }}"
+                name="phone_number">
+        </div>
+        @error('phone_number')
+            <div class="small text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+    <div class="col-lg-6 col-md-12 mb-3">
+        <div class="form-group">
+            <label class="form-label">{{ __('TPS') }}</label>
+            <select class="form-select @error('polling_station_id')
+            invalid
+        @enderror select2"
+                name="polling_station_id" data-allow-clear="true">
+                <option selected disabled>-- Pilih TPS --</option>
+                @foreach ($pollingstations as $pollingstation)
+                    <option value="{{ $pollingstation->name }}"
+                        {{ isset($user) && $user->polling_station_id == $pollingstation->id ? 'selected' : (old('polling_station_id') == $pollingstation->id ? 'selected' : '') }}>
+                        {{ $pollingstation->name }} -
+                        {{ $pollingstation->village->name }}</option>
+                @endforeach
+            </select>
+            @error('polling_station_id')
+                <div class="small text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
     @empty($user)
         <div class="col-lg-6 col-md-12 mb-3">
             <div class="form-group">
-                <label for="role">{{ __('Role') }}</label>
+                <label class="form-label" for="role">{{ __('Role') }}</label>
                 <select class="form-select @error('role')
                 invalid
             @enderror" name="role"
                     id="role">
-                    <option selected disabled>-- Select role --</option>
+                    <option selected disabled>-- Pilih role --</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->name }}">{{ $role->name }}</option>
                     @endforeach
@@ -94,7 +136,7 @@
     @isset($user)
         <div class="col-lg-6 col-md-12 mb-3">
             <div class="form-group">
-                <label for="role">{{ __('Role') }}</label>
+                <label class="form-label" for="role">{{ __('Role') }}</label>
                 <select class="form-select @error('role')
                 invalid
             @enderror" name="role"
@@ -116,3 +158,16 @@
         </div>
     @endisset
 </div>
+
+
+@push('script')
+    <script src="{{ asset('template/vendor/libs/select2/select2.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $(".select2").select2({
+                placeholder: "-- Pilih TPS --",
+                allowClear: true
+            });
+        });
+    </script>
+@endpush

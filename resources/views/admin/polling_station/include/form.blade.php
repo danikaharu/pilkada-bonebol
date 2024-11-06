@@ -13,8 +13,8 @@
 
 <div class="mb-3">
     <label class="form-label">Kelurahan</label>
-    <select name="village_id" id="defaultSelect" class="form-select @error('village_id') is-invalid @enderror">
-        <option value="" selected>-- {{ __('Pilih Kelurahan') }} --</option>
+    <select name="village_id" id="village_id" class="form-select @error('village_id') is-invalid @enderror village">
+        <option selected>-- {{ __('Pilih Kelurahan') }} --</option>
         @foreach ($villages as $village)
             <option value="{{ $village->id }}"
                 {{ isset($pollingstation) && $pollingstation->village_id == $village->id ? 'selected' : (old('village_id') == $village->id ? 'selected' : '') }}>

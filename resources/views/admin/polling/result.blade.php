@@ -121,13 +121,15 @@
                                         </tbody>
                                     </table>
                                     <div id="status" class="mt-2"></div>
-                                    <form action="">
-                                        <button type="submit" class="btn btn-success btn-accept"><i
-                                                class='bx bx-check-square'></i>
-                                            Terima</button>
-                                        <button type="submit" class="btn btn-danger btn-reject"> <i
-                                                class='bx bxs-x-square'></i>Tolak</button>
-                                    </form>
+                                    @can('verify polling')
+                                        <form action="">
+                                            <button type="submit" class="btn btn-success btn-accept"><i
+                                                    class='bx bx-check-square'></i>
+                                                Terima</button>
+                                            <button type="submit" class="btn btn-danger btn-reject"> <i
+                                                    class='bx bxs-x-square'></i>Tolak</button>
+                                        </form>
+                                    @endcan
                                 </div>
                                 <div class="col-lg-6 col-sm-12">
                                     <h5>Form C1 :</h5>
@@ -365,7 +367,7 @@
                 },
                 error: function(xhr, status, error) {
                     // Menangani kesalahan jika terjadi
-                    console.error(xhr.responseText);
+                    alert(xhr.responseText);
                 }
             });
         });

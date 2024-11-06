@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\PollingStation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Spatie\Permission\Models\Role;
@@ -36,6 +37,9 @@ class UserController extends Controller implements HasMiddleware
 
             return Datatables::of($users)
                 ->addIndexColumn()
+                ->addColumn('polling_station', function ($row) {
+                    return $row->polling_station->name . " - " . $row->polling_station->village->name;
+                })
                 ->addColumn('role', function ($row) {
                     return $row->getRoleNames()->toArray() !== [] ? $row->getRoleNames()[0] : '-';
                 })
@@ -52,7 +56,9 @@ class UserController extends Controller implements HasMiddleware
     public function create()
     {
         $roles = Role::where('name', '!=', 'Super Admin')->get();
-        return view('admin.user.create', compact('roles'));
+        $pollingstations = PollingStation::latest()->get();
+
+        return view('admin.user.create', compact('roles', 'pollingstations'));
     }
 
     /**
@@ -92,9 +98,10 @@ class UserController extends Controller implements HasMiddleware
     public function edit(User $user)
     {
         $roles = Role::get();
+        $pollingstations = PollingStation::latest()->get();
         $user->load('roles:id,name');
 
-        return view('admin.user.edit', compact('user', 'roles'));
+        return view('admin.user.edit', compact('user', 'roles', 'pollingstations'));
     }
 
     /**

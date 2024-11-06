@@ -23,7 +23,9 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'polling_station_id' => ['exists:polling_stations,id'],
             'name' => ['required', 'min:3', 'max:255'],
+            'phone_number' => ['required', 'min:3', 'max:255'],
             'username' => ['required', 'min:3', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email,' . $this->user->id],
             'role' => ['required', 'exists:roles,name'],

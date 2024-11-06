@@ -38,7 +38,8 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Nama Lengkap</th>
-                                        <th>Email</th>
+                                        <th>TPS</th>
+                                        <th>Nomor Telepon</th>
                                         <th>Peran</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -80,7 +81,10 @@
                         data: 'name'
                     },
                     {
-                        data: 'email',
+                        data: 'polling_station'
+                    },
+                    {
+                        data: 'phone_number',
                     },
                     {
                         data: 'role',

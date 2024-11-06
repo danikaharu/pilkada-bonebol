@@ -278,10 +278,13 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
+                    alert('Data berhasil diinput')
                     location.reload()
                 },
                 error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
+                    let response = JSON.parse(xhr.responseText);
+                    alert(response.message)
+                    console.error(response.message)
                 }
             });
         });
