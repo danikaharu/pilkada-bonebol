@@ -102,7 +102,7 @@
                 name="polling_station_id" data-allow-clear="true">
                 <option selected disabled>-- Pilih TPS --</option>
                 @foreach ($pollingstations as $pollingstation)
-                    <option value="{{ $pollingstation->name }}"
+                    <option value="{{ $pollingstation->id }}"
                         {{ isset($user) && $user->polling_station_id == $pollingstation->id ? 'selected' : (old('polling_station_id') == $pollingstation->id ? 'selected' : '') }}>
                         {{ $pollingstation->name }} -
                         {{ $pollingstation->village->name }}</option>
