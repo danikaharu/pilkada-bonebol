@@ -18,7 +18,7 @@
         @foreach ($villages as $village)
             <option value="{{ $village->id }}"
                 {{ isset($pollingstation) && $pollingstation->village_id == $village->id ? 'selected' : (old('village_id') == $village->id ? 'selected' : '') }}>
-                {{ $village->name }}
+                {{ $village->name }} - {{ $village->subdistrict->name }}
             </option>
         @endforeach
     </select>

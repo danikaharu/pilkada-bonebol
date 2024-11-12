@@ -36,6 +36,9 @@ class PollingStationController extends Controller implements HasMiddleware
                 ->addColumn('village', function ($row) {
                     return $row->village ? $row->village->name : '-';
                 })
+                ->addColumn('subdistrict', function ($row) {
+                    return $row->village->subdistrict->name;
+                })
                 ->addColumn('action', 'admin.polling_station.include.action')
                 ->rawColumns(['action'])
                 ->make(true);
@@ -116,11 +119,11 @@ class PollingStationController extends Controller implements HasMiddleware
             $pollingstation->delete();
 
             return redirect()
-                ->route('admin.pol$pollingstation.index')
+                ->route('admin.pollingstation.index')
                 ->with('success', __('Data Berhasil Dihapus'));
         } catch (\Throwable $th) {
             return redirect()
-                ->route('admin.pol$pollingstation.index')
+                ->route('admin.pollingstation.index')
                 ->with('error', __($th->getMessage()));
         }
     }

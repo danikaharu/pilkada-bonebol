@@ -86,24 +86,25 @@ class PollingController extends Controller implements HasMiddleware
             $user = Auth::user();
             $pollingstation = PollingStation::find($attr['polling_station_id']);
 
-            // Jika TPS yang dipilih tidak sesuai dengan user yang login, beri pesan error
-            if ($pollingstation  !== $user->polling_station_id) {
-                return redirect()->back()->withErrors(['polling_station' => 'Anda tidak memiliki akses.']);
+            if (auth()->user()->hasRole('Operator') && $pollingstation  !== $user->polling_station_id) {
+                return response()->json([
+                    'Anda tidak memiliki akses'
+                ], 403);
+            } else {
+                if ($request->hasFile('c1') && $request->file('c1')->isValid()) {
+                    $filename = $request->file('c1')->hashName();
+
+                    $request->file('c1')->storeAs('upload/c1/', $filename, 'public');
+
+                    $attr['c1'] = $filename;
+                }
+
+                $attr['candidate_votes'] = json_encode($attr['candidate_votes']);
+
+                Polling::create($attr);
+
+                return redirect()->back()->with('success', 'Data Berhasil Ditambah');
             }
-
-            if ($request->hasFile('c1') && $request->file('c1')->isValid()) {
-                $filename = $request->file('c1')->hashName();
-
-                $request->file('c1')->storeAs('upload/c1/', $filename, 'public');
-
-                $attr['c1'] = $filename;
-            }
-
-            $attr['candidate_votes'] = json_encode($attr['candidate_votes']);
-
-            Polling::create($attr);
-
-            return redirect()->back()->with('success', 'Data Berhasil Ditambah');
         } catch (\Throwable $th) {
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $th->getMessage()]);
         }

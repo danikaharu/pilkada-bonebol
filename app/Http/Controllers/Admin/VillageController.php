@@ -28,7 +28,7 @@ class VillageController extends Controller implements HasMiddleware
     public function index()
     {
         if (request()->ajax()) {
-            $villages = Village::latest()->get();
+            $villages = Village::orderBy('subdistrict_id')->latest()->get();
             return DataTables::of($villages)
                 ->addIndexColumn()
                 ->addColumn('subdistrict', function ($row) {

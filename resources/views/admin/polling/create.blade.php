@@ -278,7 +278,11 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    alert('Data berhasil diinput')
+                    Swal.fire({
+                        title: "Berhasil",
+                        text: "Data berhasil ditambah",
+                        icon: "success"
+                    });
                     location.reload()
                 },
                 error: function(xhr, status, error) {

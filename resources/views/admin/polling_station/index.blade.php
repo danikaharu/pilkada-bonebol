@@ -39,7 +39,8 @@
                                     <tr>
                                         <th>#</th>
                                         <th>TPS</th>
-                                        <th>Kelurahan</th>
+                                        <th>Desa/Kelurahan</th>
+                                        <th>Kecamatan</th>
                                         <th>Jumlah Pemilih Tetap</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -81,6 +82,9 @@
                     },
                     {
                         data: 'village',
+                    },
+                    {
+                        data: 'subdistrict',
                     },
                     {
                         data: 'registered_voters',

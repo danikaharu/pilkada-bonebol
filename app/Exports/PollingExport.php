@@ -31,7 +31,9 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
 
     public function collection()
     {
-        $data = Polling::where('type', $this->type)->get();
+        $data = Polling::where('type', $this->type)
+            ->where('status', 1)
+            ->get();
 
         return $data;
     }
@@ -65,7 +67,7 @@ class PollingExport implements FromCollection, WithHeadings, WithMapping, Should
             'NO.',
             'DAPIL',
             'KECAMATAN',
-            'KELURAHAN/DESA',
+            'DESA/KELURAHAN',
             'TPS',
         ];
 
