@@ -236,13 +236,40 @@
                     var options = {
                         series: candidateVotes,
                         chart: {
-                            width: 800,
+                            width: 650,
                             type: 'pie',
                         },
                         labels: labels,
+                        plotOptions: {
+                            pie: {
+                                dataLabels: {
+                                    offset: -5,
+                                },
+                            },
+                        },
+                        grid: {
+                            padding: {
+                                top: 0,
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                            },
+                        },
+                        dataLabels: {
+                            formatter(val, opts) {
+                                const name = opts.w.globals.labels[opts.seriesIndex]
+                                return [name, val.toFixed(1) + '%']
+                            },
+                        },
+                        legend: {
+                            show: false,
+                        },
                         responsive: [{
                             breakpoint: 480,
                             options: {
+                                chart: {
+                                    width: 200
+                                },
                                 legend: {
                                     position: 'bottom'
                                 }
