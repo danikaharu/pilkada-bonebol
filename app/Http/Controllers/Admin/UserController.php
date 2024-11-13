@@ -38,7 +38,7 @@ class UserController extends Controller implements HasMiddleware
             return Datatables::of($users)
                 ->addIndexColumn()
                 ->addColumn('polling_station', function ($row) {
-                    return $row->polling_station->name . " - " . $row->polling_station->village->name;
+                    return $row->polling_station ? $row->polling_station->name . " - " . $row->polling_station->village->name : '-';
                 })
                 ->addColumn('role', function ($row) {
                     return $row->getRoleNames()->toArray() !== [] ? $row->getRoleNames()[0] : '-';
