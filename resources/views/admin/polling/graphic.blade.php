@@ -227,17 +227,14 @@
                     var invalidVotes = parseInt(response.pollingResult.invalid_votes,
                         10);
 
-                    var series = candidateVotes.concat(invalidVotes);
-
                     var labels = [];
                     response.candidates.forEach(function(candidate, index) {
                         labels.push(candidate.regional_head + '-' + candidate.deputy_head +
                             ' (' + candidateVotes[index] + ')');
                     });
-                    labels.push('Suara Tidak Sah (' + invalidVotes + ')');
 
                     var options = {
-                        series: series,
+                        series: candidateVotes,
                         chart: {
                             width: 800,
                             type: 'pie',
