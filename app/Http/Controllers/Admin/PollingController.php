@@ -43,8 +43,20 @@ class PollingController extends Controller implements HasMiddleware
     public function index()
     {
         if (request()->ajax()) {
-            $pollings = Polling::with('polling_station')->latest()->get();
-            return DataTables::of($pollings)
+            // Ambil subdistrict_id dari user yang login
+            $userSubdistrictId = Auth::user()->subdistrict_id;
+
+            // Query dasar dengan relasi
+            $query = Polling::with('polling_station.village.subdistrict.electoral_district')->latest();
+
+            // Tambahkan filter jika user memiliki subdistrict_id
+            if ($userSubdistrictId) {
+                $query->whereHas('polling_station.village.subdistrict', function ($q) use ($userSubdistrictId) {
+                    $q->where('id', $userSubdistrictId);
+                });
+            }
+
+            return DataTables::of($query->get())
                 ->addIndexColumn()
                 ->addColumn('electoral_district', function ($row) {
                     return $row->polling_station->village->subdistrict->electoral_district ? $row->polling_station->village->subdistrict->electoral_district->name : '-';
