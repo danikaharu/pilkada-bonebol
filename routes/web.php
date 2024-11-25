@@ -28,8 +28,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth'], fu
 
     // Polling 
     Route::resource('/polling', App\Http\Controllers\Admin\PollingController::class);
-    Route::get('/pollings/graphic', ['App\Http\Controllers\Admin\PollingController', 'graphic'])->name('polling.graphic');
-    Route::get('/pollings/result', ['App\Http\Controllers\Admin\PollingController', 'result'])->name('polling.result');
     Route::post('/pollings/fetchSubdistrict', ['App\Http\Controllers\Admin\PollingController', 'fetchSubdistrict'])->name('polling.fetchSubdistrict');
     Route::post('/pollings/fetchVillage', ['App\Http\Controllers\Admin\PollingController', 'fetchVillage'])->name('polling.fetchVillage');
     Route::post('/pollings/fetchPollingStation', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingStation'])->name('polling.fetchPollingStation');
@@ -38,6 +36,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth'], fu
     Route::post('/pollings/fetchPollingGraphic', ['App\Http\Controllers\Admin\PollingController', 'fetchPollingGraphic'])->name('polling.fetchPollingGraphic');
     Route::post('/pollings/verify', ['App\Http\Controllers\Admin\PollingController', 'verify'])->name('polling.verify');
     Route::get('/pollings/export/excel', ['App\Http\Controllers\Admin\PollingController', 'exportExcel'])->name('polling.exportExcel');
+
+    // Polling Result
+    Route::get('/pollings/result/pollingstation', ['App\Http\Controllers\Admin\PollingController', 'result'])->name('polling.result');
+    Route::get('/pollings/result/all', ['App\Http\Controllers\Admin\PollingController', 'resultAll'])->name('polling.resultAll');
+    Route::get('/pollings/result/village', ['App\Http\Controllers\Admin\PollingController', 'resultVillage'])->name('polling.resultVillage');
+    Route::get('/pollings/result/subdistrict', ['App\Http\Controllers\Admin\PollingController', 'resultSubdistrict'])->name('polling.resultSubdistrict');
+    Route::get('/pollings/result/electoraldistrict', ['App\Http\Controllers\Admin\PollingController', 'resultElectoraldistrict'])->name('polling.resultElectoraldistrict');
+
+    // Polling Graphic
+    Route::get('/pollings/graphic/all', ['App\Http\Controllers\Admin\PollingController', 'graphicAll'])->name('polling.graphicAll');
+    Route::get('/pollings/graphic/electoraldistrict', ['App\Http\Controllers\Admin\PollingController', 'graphicElectoraldistrict'])->name('polling.graphicElectoralDistrict');
+    Route::get('/pollings/graphic/subdistrict', ['App\Http\Controllers\Admin\PollingController', 'graphicSubdistrict'])->name('polling.graphicSubdistrict');
+    Route::get('/pollings/graphic/village', ['App\Http\Controllers\Admin\PollingController', 'graphicVillage'])->name('polling.graphicVillage');
+    Route::get('/pollings/graphic/pollingstation', ['App\Http\Controllers\Admin\PollingController', 'graphic'])->name('polling.graphic');
 
     // User
     Route::resource('/user', App\Http\Controllers\Admin\UserController::class);

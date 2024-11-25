@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'polling_station_id',
+        'subdistrict_id',
         'name',
         'username',
         'phone_number',
@@ -49,8 +49,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function polling_station()
+    public function subdistrict()
     {
-        return $this->belongsTo(PollingStation::class);
+        return $this->belongsTo(Subdistrict::class);
     }
 }

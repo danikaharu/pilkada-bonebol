@@ -4,14 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\PollingExport;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePollingRequest;
-use App\Http\Requests\UpdatePollingRequest;
-use App\Models\Candidate;
-use App\Models\ElectoralDistrict;
-use App\Models\Polling;
-use App\Models\PollingStation;
-use App\Models\Subdistrict;
-use App\Models\Village;
+use App\Http\Requests\{StorePollingRequest, UpdatePollingRequest};
+use App\Models\{Candidate, ElectoralDistrict, Polling, PollingStation, Subdistrict, Village};
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -27,9 +21,19 @@ class PollingController extends Controller implements HasMiddleware
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create polling'), only: ['create', 'store']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit polling'), only: ['edit', 'update']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete polling'), only: ['destroy']),
-            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result polling'), only: ['result', 'graphic']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result polling'), only: ['graphic']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('verify polling'), only: ['verify']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('export polling'), only: ['export']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result all'), only: ['resultAll']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result electoral district'), only: ['resultElectoraldistrict']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result subdistrict'), only: ['resultSubdistrict']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result village'), only: ['resultVillage']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result polling station'), only: ['result']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('graphic all'), only: ['graphicAll']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('graphic electoral district'), only: ['graphicElectoraldistrict']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('graphic subdistrict'), only: ['graphicSubdistrict']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('graphic village'), only: ['graphicVillage']),
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('graphic polling station'), only: ['graphic']),
         ];
     }
 
@@ -174,14 +178,14 @@ class PollingController extends Controller implements HasMiddleware
     public function graphic()
     {
         $electoralDistricts = ElectoralDistrict::all();
-        return view('admin.polling.graphic', compact('electoralDistricts'));
+        return view('admin.polling.graphic.pollingstation', compact('electoralDistricts'));
     }
 
     public function result()
     {
         $electoralDistricts = ElectoralDistrict::all();
 
-        return view('admin.polling.result', compact('electoralDistricts'));
+        return view('admin.polling.result.pollingstation', compact('electoralDistricts'));
     }
 
     public function fetchSubdistrict(Request $request)
@@ -295,5 +299,480 @@ class PollingController extends Controller implements HasMiddleware
         } else {
             return redirect()->back()->with('toast_error', 'Maaf, tidak bisa export data');
         }
+    }
+
+    public function resultAll(Request $request)
+    {
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::where('type', $type)->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        // Ambil kandidat berdasarkan tipe jika ada
+        $candidates = Candidate::where('type', $type)->get();
+
+        // Membuat array untuk menyimpan total suara per kandidat
+        $totalVotes = [];
+        $totalInvalidVotes = 0;
+
+        // Loop melalui polling untuk menjumlahkan suara
+        foreach ($pollings as $polling) {
+            // Decode data candidate_votes menjadi array
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            // Pastikan data candidate_votes adalah array
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    // Menambahkan suara ke kandidat berdasarkan indeks
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+
+            // Tambahkan suara tidak sah
+            $totalInvalidVotes += (int) $polling->invalid_votes;  // Pastikan invalid_votes dihitung sebagai integer
+        }
+
+        // Menyusun data untuk view
+        $data = [
+            'candidates' => [],
+            'invalid_votes' => number_format($totalInvalidVotes, 0, ',', '.'),  // Format dengan tanda koma
+        ];
+
+        // Loop melalui kandidat untuk menambahkan total suara
+        foreach ($candidates as $candidate) {
+            // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
+            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $data['candidates'][] = [
+                'candidate_no' => $candidate->number, // Nomor urut kandidat
+                'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
+                'votes' => number_format($candidateVotes, 0, ',', '.'), // Total suara
+            ];
+        }
+
+        return view('admin.polling.result.all', compact('data', 'type'));
+    }
+
+    public function resultVillage(Request $request)
+    {
+        $allowedSubdistrict = Auth::user()->subdistrict_id;
+
+        if (auth()->user()->hasRole('Operator')) {
+            $villages = Village::whereHas('subdistrict', function ($query) use ($allowedSubdistrict) {
+                $query->where('id', $allowedSubdistrict);
+            })->get();
+        } else {
+            $villages = Village::latest()->get(["name", "id"]);
+        }
+
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $villagesId = $request->input('village_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station', function ($query) use ($villagesId) {
+                $query->where('village_id', $villagesId);
+            })->where('type', $type)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        // Ambil kandidat berdasarkan tipe jika ada
+        $candidates = Candidate::where('type', $type)->get();
+
+        // Membuat array untuk menyimpan total suara per kandidat
+        $totalVotes = [];
+        $totalInvalidVotes = 0;
+
+        // Loop melalui polling untuk menjumlahkan suara
+        foreach ($pollings as $polling) {
+            // Decode data candidate_votes menjadi array
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            // Pastikan data candidate_votes adalah array
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    // Menambahkan suara ke kandidat berdasarkan indeks
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+
+            // Tambahkan suara tidak sah
+            $totalInvalidVotes += (int) $polling->invalid_votes;  // Pastikan invalid_votes dihitung sebagai integer
+        }
+
+        // Menyusun data untuk view
+        $data = [
+            'candidates' => [],
+            'invalid_votes' => number_format($totalInvalidVotes, 0, ',', '.'),  // Format dengan tanda koma
+        ];
+
+        // Loop melalui kandidat untuk menambahkan total suara
+        foreach ($candidates as $candidate) {
+            // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
+            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $data['candidates'][] = [
+                'candidate_no' => $candidate->number, // Nomor urut kandidat
+                'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
+                'votes' => number_format($candidateVotes, 0, ',', '.'), // Total suara
+            ];
+        }
+
+        return view('admin.polling.result.village', compact('data', 'type', 'villages'));
+    }
+
+    public function resultSubdistrict(Request $request)
+    {
+        $allowedSubdistrict = Auth::user()->subdistrict_id;
+
+        if (auth()->user()->hasRole('Operator')) {
+            $subdistricts = Subdistrict::where('id', $allowedSubdistrict)->get(["name", "id"]);
+        } else {
+            $subdistricts = Subdistrict::latest()->get(["name", "id"]);
+        }
+
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $subdistrictsId = $request->input('subdistrict_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station.village.subdistrict', function ($query) use ($subdistrictsId) {
+                $query->where('id', $subdistrictsId); // ID kecamatan
+            })->where('type', $type)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        // Ambil kandidat berdasarkan tipe jika ada
+        $candidates = Candidate::where('type', $type)->get();
+
+        // Membuat array untuk menyimpan total suara per kandidat
+        $totalVotes = [];
+        $totalInvalidVotes = 0;
+
+        // Loop melalui polling untuk menjumlahkan suara
+        foreach ($pollings as $polling) {
+            // Decode data candidate_votes menjadi array
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            // Pastikan data candidate_votes adalah array
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    // Menambahkan suara ke kandidat berdasarkan indeks
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+
+            // Tambahkan suara tidak sah
+            $totalInvalidVotes += (int) $polling->invalid_votes;  // Pastikan invalid_votes dihitung sebagai integer
+        }
+
+        // Menyusun data untuk view
+        $data = [
+            'candidates' => [],
+            'invalid_votes' => number_format($totalInvalidVotes, 0, ',', '.'),  // Format dengan tanda koma
+        ];
+
+        // Loop melalui kandidat untuk menambahkan total suara
+        foreach ($candidates as $candidate) {
+            // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
+            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $data['candidates'][] = [
+                'candidate_no' => $candidate->number, // Nomor urut kandidat
+                'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
+                'votes' => number_format($candidateVotes, 0, ',', '.'), // Total suara
+            ];
+        }
+
+        return view('admin.polling.result.subdistrict', compact('data', 'type', 'subdistricts'));
+    }
+
+    public function resultElectoraldistrict(Request $request)
+    {
+        $electoraldistricts = ElectoralDistrict::all();
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $electoraldistrictsId = $request->input('electoraldistrict_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station.village.subdistrict.electoral_district', function ($query) use ($electoraldistrictsId) {
+                $query->where('id', $electoraldistrictsId); // ID kecamatan
+            })->where('type', $type)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        // Ambil kandidat berdasarkan tipe jika ada
+        $candidates = Candidate::where('type', $type)->get();
+
+        // Membuat array untuk menyimpan total suara per kandidat
+        $totalVotes = [];
+        $totalInvalidVotes = 0;
+
+        // Loop melalui polling untuk menjumlahkan suara
+        foreach ($pollings as $polling) {
+            // Decode data candidate_votes menjadi array
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            // Pastikan data candidate_votes adalah array
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    // Menambahkan suara ke kandidat berdasarkan indeks
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+
+            // Tambahkan suara tidak sah
+            $totalInvalidVotes += (int) $polling->invalid_votes;  // Pastikan invalid_votes dihitung sebagai integer
+        }
+
+        // Menyusun data untuk view
+        $data = [
+            'candidates' => [],
+            'invalid_votes' => number_format($totalInvalidVotes, 0, ',', '.'),  // Format dengan tanda koma
+        ];
+
+        // Loop melalui kandidat untuk menambahkan total suara
+        foreach ($candidates as $candidate) {
+            // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
+            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $data['candidates'][] = [
+                'candidate_no' => $candidate->number, // Nomor urut kandidat
+                'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
+                'votes' => number_format($candidateVotes, 0, ',', '.'), // Total suara
+            ];
+        }
+
+        return view('admin.polling.result.electoraldistrict', compact('data', 'type', 'electoraldistricts'));
+    }
+
+    public function graphicAll(Request $request)
+    {
+        // Default tipe pemilihan ke 1 jika tidak ada input
+        $type = $request->input('type', 1);
+
+        // Ambil polling berdasarkan tipe pemilihan dan status aktif
+        $pollings = Polling::where('type', $type)->where('status', 1)->get();
+
+        $totalVotes = [];
+
+        // Looping polling untuk menjumlahkan suara per kandidat
+        foreach ($pollings as $polling) {
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+        }
+
+        // Ambil data kandidat berdasarkan tipe pemilihan
+        $candidates = Candidate::where('type', $type)->orderBy('number')->get();
+
+        // Format data kandidat dan total suara
+        $candidateNames = $candidates->pluck('candidate')->toArray();
+        $candidateNumbers = $candidates->pluck('number')->toArray();
+
+        $totalVotesFormatted = [];
+        foreach ($candidates as $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'candidateNames' => $candidateNames,
+                'totalVotes' => $totalVotesFormatted,
+            ]);
+        }
+
+        // Kirim data ke tampilan
+        return view('admin.polling.graphic.all', compact('totalVotesFormatted', 'candidateNames', 'type'));
+    }
+
+    public function graphicElectoralDistrict(Request $request)
+    {
+        $electoraldistricts = ElectoralDistrict::all();
+
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $electoraldistrictsId = $request->input('electoraldistrict_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station.village.subdistrict.electoral_district', function ($query) use ($electoraldistrictsId) {
+                $query->where('id', $electoraldistrictsId); // ID daerah pemilihan
+            })->where('type', $type)
+                ->where('status', 1)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        $totalVotes = [];
+
+        // Looping polling untuk menjumlahkan suara per kandidat
+        foreach ($pollings as $polling) {
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+        }
+
+        // Ambil data kandidat berdasarkan tipe pemilihan
+        $candidates = Candidate::where('type', $type)->orderBy('number')->get();
+
+        // Format data kandidat dan total suara
+        $candidateNames = $candidates->pluck('candidate')->toArray();
+        $candidateNumbers = $candidates->pluck('number')->toArray();
+
+        $totalVotesFormatted = [];
+        foreach ($candidates as $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'candidateNames' => $candidateNames,
+                'totalVotes' => $totalVotesFormatted,
+            ]);
+        }
+
+        return view('admin.polling.graphic.electoraldistrict', compact('totalVotesFormatted', 'candidateNames', 'type', 'electoraldistricts'));
+    }
+
+    public function graphicSubdistrict(Request $request)
+    {
+        $subdistricts = Subdistrict::all();
+
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $subdistrictId = $request->input('subdistrict_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station.village.subdistrict', function ($query) use ($subdistrictId) {
+                $query->where('id', $subdistrictId); // ID daerah pemilihan
+            })->where('type', $type)
+                ->where('status', 1)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        $totalVotes = [];
+
+        // Looping polling untuk menjumlahkan suara per kandidat
+        foreach ($pollings as $polling) {
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+        }
+
+        // Ambil data kandidat berdasarkan tipe pemilihan
+        $candidates = Candidate::where('type', $type)->orderBy('number')->get();
+
+        // Format data kandidat dan total suara
+        $candidateNames = $candidates->pluck('candidate')->toArray();
+        $candidateNumbers = $candidates->pluck('number')->toArray();
+
+        $totalVotesFormatted = [];
+        foreach ($candidates as $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'candidateNames' => $candidateNames,
+                'totalVotes' => $totalVotesFormatted,
+            ]);
+        }
+
+        return view('admin.polling.graphic.subdistrict', compact('totalVotesFormatted', 'candidateNames', 'type', 'subdistricts'));
+    }
+
+    public function graphicVillage(Request $request)
+    {
+        $villages = Village::all();
+
+        // Ambil parameter tipe pemilihan
+        $type = $request->input('type', null);
+        $villageId = $request->input('village_id', null);
+
+        // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
+        if ($type) {
+            // Ambil polling yang sesuai dengan type
+            $pollings = Polling::whereHas('polling_station.village', function ($query) use ($villageId) {
+                $query->where('id', $villageId); // ID daerah pemilihan
+            })->where('type', $type)
+                ->where('status', 1)
+                ->get();
+        } else {
+            // Ambil semua polling jika type tidak dipilih
+            $pollings = Polling::all();
+        }
+
+        $totalVotes = [];
+
+        // Looping polling untuk menjumlahkan suara per kandidat
+        foreach ($pollings as $polling) {
+            $candidateVotes = json_decode($polling->candidate_votes, true);
+
+            if (is_array($candidateVotes)) {
+                foreach ($candidateVotes as $index => $votes) {
+                    $totalVotes[$index] = ($totalVotes[$index] ?? 0) + $votes;
+                }
+            }
+        }
+
+        // Ambil data kandidat berdasarkan tipe pemilihan
+        $candidates = Candidate::where('type', $type)->orderBy('number')->get();
+
+        // Format data kandidat dan total suara
+        $candidateNames = $candidates->pluck('candidate')->toArray();
+        $candidateNumbers = $candidates->pluck('number')->toArray();
+
+        $totalVotesFormatted = [];
+        foreach ($candidates as $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'candidateNames' => $candidateNames,
+                'totalVotes' => $totalVotesFormatted,
+            ]);
+        }
+
+        return view('admin.polling.graphic.village', compact('totalVotesFormatted', 'candidateNames', 'type', 'villages'));
     }
 }

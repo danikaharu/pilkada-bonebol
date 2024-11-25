@@ -95,20 +95,19 @@
     </div>
     <div class="col-lg-6 col-md-12 mb-3">
         <div class="form-group">
-            <label class="form-label">{{ __('TPS') }}</label>
-            <select class="form-select @error('polling_station_id')
+            <label class="form-label">{{ __('Kecamatan') }}</label>
+            <select class="form-select @error('subdistrict_id')
             invalid
         @enderror select2"
-                name="polling_station_id" data-allow-clear="true">
-                <option selected disabled>-- Pilih TPS --</option>
-                @foreach ($pollingstations as $pollingstation)
-                    <option value="{{ $pollingstation->id }}"
-                        {{ isset($user) && $user->polling_station_id == $pollingstation->id ? 'selected' : (old('polling_station_id') == $pollingstation->id ? 'selected' : '') }}>
-                        {{ $pollingstation->name }} -
-                        {{ $pollingstation->village->name }}</option>
+                name="subdistrict_id" data-allow-clear="true">
+                <option selected disabled>-- Pilih Kecamatan --</option>
+                @foreach ($subdistricts as $subdistrict)
+                    <option value="{{ $subdistrict->id }}"
+                        {{ isset($user) && $user->subdistrict_id == $subdistrict->id ? 'selected' : (old('subdistrict_id') == $subdistrict->id ? 'selected' : '') }}>
+                        {{ $subdistrict->name }}</option>
                 @endforeach
             </select>
-            @error('polling_station_id')
+            @error('subdistrict_id')
                 <div class="small text-danger">{{ $message }}</div>
             @enderror
         </div>

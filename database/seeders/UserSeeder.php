@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'email' => 'pilkada@bonebolangokab.go.id',
             'password' => Hash::make('123456'),
+            'phone_number' => 321321313,
         ]);
     }
 }

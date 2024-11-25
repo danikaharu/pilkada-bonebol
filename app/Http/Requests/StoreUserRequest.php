@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'polling_station_id' => ['exists:polling_stations,id', 'unique:users,polling_station_id'],
+            'subdistrict_id' => ['exists:subdistricts,id', 'unique:users,subdistrict_id'],
             'name' => ['required', 'min:3', 'max:255'],
             'phone_number' => ['required', 'min:3', 'max:255'],
             'username' => ['required', 'min:3', 'max:255'],

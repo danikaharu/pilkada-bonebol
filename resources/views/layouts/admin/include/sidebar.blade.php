@@ -95,21 +95,101 @@
             </li>
         @endcan
 
-        @can('result polling')
-            <li class="menu-item {{ request()->is('admin/pollings/result') ? ' active' : '' }}">
-                <a href="{{ route('admin.polling.result') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-file"></i>
-                    <div data-i18n="Basic">Hasil Perolehan Suara</div>
-                </a>
-            </li>
+        <li class="menu-item {{ request()->is('admin/pollings/result/*') ? ' open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Basic">Hasil Perolehan Suara</div>
+            </a>
+            <ul class="menu-sub">
+                @can('result polling station')
+                    <li class="menu-item {{ request()->is('admin/pollings/result/pollingstation') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.result') }}" class="menu-link">
+                            <div>Per Tps</div>
+                        </a>
+                    </li>
+                @endcan
 
-            <li class="menu-item {{ request()->is('admin/pollings/graphic') ? ' active' : '' }}">
-                <a href="{{ route('admin.polling.graphic') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-doughnut-chart"></i>
-                    <div data-i18n="Basic">Grafik Perolehan Suara</div>
-                </a>
-            </li>
-        @endcan
+                @can('result village')
+                    <li class="menu-item {{ request()->is('admin/pollings/result/village') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.resultVillage') }}" class="menu-link">
+                            <div>Per Desa</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('result subdistrict')
+                    <li class="menu-item {{ request()->is('admin/pollings/result/subdistrict') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.resultSubdistrict') }}" class="menu-link">
+                            <div>Per Kecamatan</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('result electoral district')
+                    <li class="menu-item {{ request()->is('admin/pollings/result/electoraldistrict') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.resultElectoraldistrict') }}" class="menu-link">
+                            <div>Per Dapil</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('result all')
+                    <li class="menu-item {{ request()->is('admin/pollings/result/all') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.resultAll') }}" class="menu-link">
+                            <div>Keseluruhan</div>
+                        </a>
+                    </li>
+                @endcan
+            </ul>
+        </li>
+
+        <li class="menu-item {{ request()->is('admin/pollings/graphic/*') ? ' open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-doughnut-chart"></i>
+                <div data-i18n="Basic">Grafik Perolehan Suara</div>
+            </a>
+            <ul class="menu-sub">
+                @can('graphic polling station')
+                    <li class="menu-item {{ request()->is('admin/pollings/graphic/pollingstation') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.graphic') }}" class="menu-link">
+                            <div>Per Tps</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('graphic village')
+                    <li class="menu-item {{ request()->is('admin/pollings/graphic/village') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.graphicVillage') }}" class="menu-link">
+                            <div>Per Desa</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('graphic subdistrict')
+                    <li class="menu-item {{ request()->is('admin/pollings/graphic/subdistrict') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.graphicSubdistrict') }}" class="menu-link">
+                            <div>Per Kecamatan</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('graphic electoral district')
+                    <li class="menu-item {{ request()->is('admin/pollings/graphic/electoraldistrict') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.graphicElectoralDistrict') }}" class="menu-link">
+                            <div>Per Dapil</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('graphic all')
+                    <li class="menu-item {{ request()->is('admin/pollings/graphic/all') ? ' active' : '' }}">
+                        <a href="{{ route('admin.polling.graphicAll') }}" class="menu-link">
+                            <div>Keseluruhan</div>
+                        </a>
+                    </li>
+                @endcan
+            </ul>
+        </li>
 
         @can('view user')
             <!-- Pengguna -->

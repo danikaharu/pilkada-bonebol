@@ -260,5 +260,25 @@ return [
                 'export polling',
             ]
         ],
+        [
+            'group' => 'result pollings',
+            'lists' => [
+                'result all',
+                'result electoral district',
+                'result subdistrict',
+                'result village',
+                'result polling station',
+            ]
+        ],
+        [
+            'group' => 'graphic pollings',
+            'lists' => [
+                'graphic all',
+                'graphic electoral district',
+                'graphic subdistrict',
+                'graphic village',
+                'graphic polling station',
+            ]
+        ],
     ],
 ];

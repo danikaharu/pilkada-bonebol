@@ -38,7 +38,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Nama Lengkap</th>
-                                        <th>TPS</th>
+                                        <th>Kecamatan</th>
                                         <th>Nomor Telepon</th>
                                         <th>Peran</th>
                                         <th>Aksi</th>
@@ -81,7 +81,7 @@
                         data: 'name'
                     },
                     {
-                        data: 'polling_station'
+                        data: 'subdistrict'
                     },
                     {
                         data: 'phone_number',
