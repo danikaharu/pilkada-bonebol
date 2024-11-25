@@ -90,7 +90,7 @@ class PollingController extends Controller implements HasMiddleware
             $user = Auth::user();
             $pollingstation = PollingStation::find($attr['polling_station_id']);
 
-            if ($user->hasRole('Operator') && $pollingstation->id !== $user->polling_station_id) {
+            if ($user->hasRole('Operator') && $pollingstation->village->subdistrict->id !== $user->subdistrict_id) {
                 return response()->json([
                     'message' => 'Anda tidak memiliki akses'
                 ], 403);
