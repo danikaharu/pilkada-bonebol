@@ -190,8 +190,16 @@ class PollingController extends Controller implements HasMiddleware
 
     public function fetchSubdistrict(Request $request)
     {
-        $data['subdistricts'] = Subdistrict::where("electoral_district_id", $request->electoral_district_id)
-            ->get(["name", "id"]);
+        $allowedSubdistrict = Auth::user()->subdistrict_id;
+
+        if (auth()->user()->hasRole('Operator')) {
+            $data['subdistricts'] = Subdistrict::where("electoral_district_id", $request->electoral_district_id)
+                ->where('id', $allowedSubdistrict)
+                ->get(["name", "id"]);
+        } else {
+            $data['subdistricts'] = Subdistrict::where("electoral_district_id", $request->electoral_district_id)
+                ->get(["name", "id"]);
+        }
 
         return response()->json($data);
     }
@@ -206,16 +214,8 @@ class PollingController extends Controller implements HasMiddleware
 
     public function fetchPollingStation(Request $request)
     {
-        $allowedPollingStation = Auth::user()->polling_station_id;
-
-        if (auth()->user()->hasRole('Operator')) {
-            $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
-                ->where('id', $allowedPollingStation)
-                ->get(["name", "id"]);
-        } else {
-            $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
-                ->get(["name", "id"]);
-        }
+        $data['pollingstations'] = PollingStation::where("village_id", $request->village_id)
+            ->get(["name", "id"]);
 
         return response()->json($data);
     }
