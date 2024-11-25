@@ -204,7 +204,7 @@ class PollingController extends Controller implements HasMiddleware
     {
         $allowedSubdistrict = Auth::user()->subdistrict_id;
 
-        if (auth()->user()->hasRole('Operator')) {
+        if ($allowedSubdistrict) {
             $data['subdistricts'] = Subdistrict::where("electoral_district_id", $request->electoral_district_id)
                 ->where('id', $allowedSubdistrict)
                 ->get(["name", "id"]);
@@ -240,11 +240,12 @@ class PollingController extends Controller implements HasMiddleware
 
     public function fetchPollingResult(Request $request)
     {
+        $subdistrict_id = $request->input('subdistrict_id');
         $polling_station_id = $request->input('polling_station_id');
         $type = $request->input('type');
-        $userPollingStation = Auth::user()->polling_station_id;
+        $userSubdistrict = Auth::user()->subdistrict_id;
 
-        if (auth()->user()->hasRole('Operator') && $polling_station_id != $userPollingStation) {
+        if ($subdistrict_id != $userSubdistrict) {
             return response()->json([
                 'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
             ], 403);
@@ -265,11 +266,12 @@ class PollingController extends Controller implements HasMiddleware
 
     public function fetchPollingGraphic(Request $request)
     {
+        $subdistrict_id = $request->input('subdistrict_id');
         $polling_station_id = $request->input('polling_station_id');
         $type = $request->input('type');
-        $userPollingStation = Auth::user()->polling_station_id;
+        $userSubdistrict = Auth::user()->subdistrict_id;
 
-        if (auth()->user()->hasRole('Operator') && $polling_station_id != $userPollingStation) {
+        if ($subdistrict_id != $userSubdistrict) {
             return response()->json([
                 'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
             ], 403);
@@ -375,7 +377,7 @@ class PollingController extends Controller implements HasMiddleware
     {
         $allowedSubdistrict = Auth::user()->subdistrict_id;
 
-        if (auth()->user()->hasRole('Operator')) {
+        if ($allowedSubdistrict) {
             $villages = Village::whereHas('subdistrict', function ($query) use ($allowedSubdistrict) {
                 $query->where('id', $allowedSubdistrict);
             })->get();
@@ -447,7 +449,7 @@ class PollingController extends Controller implements HasMiddleware
     {
         $allowedSubdistrict = Auth::user()->subdistrict_id;
 
-        if (auth()->user()->hasRole('Operator')) {
+        if ($allowedSubdistrict) {
             $subdistricts = Subdistrict::where('id', $allowedSubdistrict)->get(["name", "id"]);
         } else {
             $subdistricts = Subdistrict::latest()->get(["name", "id"]);
@@ -678,7 +680,13 @@ class PollingController extends Controller implements HasMiddleware
 
     public function graphicSubdistrict(Request $request)
     {
-        $subdistricts = Subdistrict::all();
+        $allowedSubdistrict = Auth::user()->subdistrict_id;
+
+        if ($allowedSubdistrict) {
+            $subdistricts = Subdistrict::where('id', $allowedSubdistrict)->get(["name", "id"]);
+        } else {
+            $subdistricts = Subdistrict::latest()->get(["name", "id"]);
+        }
 
         // Ambil parameter tipe pemilihan
         $type = $request->input('type', null);
@@ -734,7 +742,15 @@ class PollingController extends Controller implements HasMiddleware
 
     public function graphicVillage(Request $request)
     {
-        $villages = Village::all();
+        $allowedSubdistrict = Auth::user()->subdistrict_id;
+
+        if ($allowedSubdistrict) {
+            $villages = Village::whereHas('subdistrict', function ($query) use ($allowedSubdistrict) {
+                $query->where('id', $allowedSubdistrict);
+            })->get();
+        } else {
+            $villages = Village::latest()->get(["name", "id"]);
+        }
 
         // Ambil parameter tipe pemilihan
         $type = $request->input('type', null);

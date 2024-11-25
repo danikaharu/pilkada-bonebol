@@ -200,6 +200,7 @@
             event.preventDefault();
 
             var selectedTps = $('#tps').val();
+            var selectedSubdistrict = $('#kecamatan').val();
             var selectedType = $('#type').val();
 
             $.ajax({
@@ -207,6 +208,7 @@
                 type: "POST",
                 data: {
                     polling_station_id: selectedTps,
+                    subdistrict_id: selectedSubdistrict,
                     type: selectedType,
                     _token: '{{ csrf_token() }}'
                 },
