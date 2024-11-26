@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UpdateUserRequest extends FormRequest
@@ -23,7 +24,7 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subdistrict_id' => ['exists:subdistricts,id', 'unique:users,subdistrict_id,' . $this->user->id],
+            'subdistrict_id' => ['exists:subdistricts,id'],
             'name' => ['required', 'min:3', 'max:255'],
             'phone_number' => ['required', 'min:3', 'max:255'],
             'username' => ['required', 'min:3', 'max:255'],
@@ -40,5 +41,21 @@ class UpdateUserRequest extends FormRequest
                     ->uncompromised()
             ]
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Cek apakah kombinasi subdistrict_id dan role sudah ada
+            $exists = \Illuminate\Support\Facades\DB::table('model_has_roles')
+                ->join('users', 'users.id', '=', 'model_has_roles.model_id')
+                ->where('users.subdistrict_id', $this->subdistrict_id)
+                ->where('model_has_roles.role_id', $this->role_id)
+                ->exists();
+
+            if ($exists) {
+                $validator->errors()->add('subdistrict_id', 'Subdistrict dan role ini sudah terdaftar.');
+            }
+        });
     }
 }
