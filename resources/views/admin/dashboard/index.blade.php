@@ -28,6 +28,12 @@
                                         memastikan kelancaran proses pengolahan data yang akurat dan up-to-date.
                                     </p>
                                 @endhasrole
+                                @hasanyrole('Camat|Pimpinan')
+                                    <p class="mb-4">
+                                        Di halaman Dashboard Pilkada ini, Anda dapat melihat hasil perolehan suara dan juga
+                                        grafik perolehan suara secara up-to-date.
+                                    </p>
+                                @endhasanyrole
 
                             </div>
                         </div>
@@ -110,6 +116,8 @@
                         </div>
                     </div>
                 </div>
+            @endhasrole
+            @hasanyrole('Super Admin|Pimpinan')
                 <div class="col-lg-6 mt-4 col-sm-12 order-1">
                     <div class="card">
                         <div class="card-body">
@@ -117,7 +125,7 @@
                                 <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                     <div class="card-title">
                                         <h5 class="text-nowrap mb-2">Jumlah Suara yang Belum Diverifikasi
-                                            (TPS) </h5>
+                                            (Berdasarkan Jumlah TPS) </h5>
                                     </div>
                                     <div class="mt-sm-auto">
                                         <h3 class="mb-0">{{ $totalPollingUnverified }}</h3>
@@ -134,7 +142,7 @@
                                 <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                     <div class="card-title">
                                         <h5 class="text-nowrap mb-2">Jumlah Suara yang sudah Terverifikasi
-                                            (TPS) </h5>
+                                            (Berdasarkan Jumlah TPS) </h5>
                                     </div>
                                     <div class="mt-sm-auto">
                                         <h3 class="mb-0">{{ $totalPollingVerified }}</h3>
@@ -144,7 +152,7 @@
                         </div>
                     </div>
                 </div>
-            @endhasrole
+            @endhasanyrole
         </div>
     </div>
 @endsection
