@@ -32,10 +32,12 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title header-elements">Data Hasil Perolehan Suara
-                            <div class="card-title-elements ms-auto">
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#reportPolling"><i class="bx bx-printer me-1"></i>Cetak </button>
-                            </div>
+                            @can('export polling')
+                                <div class="card-title-elements ms-auto">
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#reportPolling"><i class="bx bx-printer me-1"></i>Cetak </button>
+                                </div>
+                            @endcan
                         </h5>
                         <h6 class="card-subtitle text-muted">Berikut data Hasil Perolehan Suara yang telah dimasukan</h6>
                         <div class="my-4">
@@ -352,17 +354,17 @@
                     }
                     $('#status').html('Status: ' + statusBadge);
 
-                    // Jika status adalah 2, tambahkan tombol edit
-                    if (status == 2) {
-                        let pollingResultId = response.pollingResult.id;
-                        let editUrl = "{{ route('admin.polling.edit', ':id') }}".replace(':id',
-                            pollingResultId);
-
-                        let editButton = "<a href='" + editUrl +
-                            "' class='btn btn-warning btn-edit'><i class='bx bx-edit-alt'></i> Edit</a>";
-                        $('#status').append(' ' +
-                            editButton); // Append tombol edit setelah status badge
-                    }
+                    @can('edit polling')
+                        if (status == 2) {
+                            let pollingResultId = response.pollingResult.id;
+                            let editUrl = "{{ route('admin.polling.edit', ':id') }}".replace(':id',
+                                pollingResultId);
+                            let editButton = "<a href='" + editUrl +
+                                "' class='btn btn-warning btn-edit'><i class='bx bx-edit-alt'></i> Edit</a>";
+                            $('#status').append(' ' +
+                                editButton); // Append tombol edit setelah status badge
+                        }
+                    @endcan
 
                     // Menampilkan hasil suara
                     $('#form').show();
