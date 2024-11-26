@@ -109,7 +109,7 @@
                         <h6 class="card-subtitle text-muted">Berikut data Hasil Perolehan Suara yang telah dimasukan</h6>
                         <div class="my-4">
                             <div class="row">
-                                <div class="col-lg-6 col-sm-12">
+                                <div class="col-lg-12 col-sm-12">
                                     <h5>Perolehan Suara :</h5>
                                     <table id="resultTable" class="table table-striped table-bordered">
                                         <thead>
@@ -133,14 +133,22 @@
                                         </form>
                                     @endcan
                                 </div>
-                                <div class="col-lg-6 col-sm-12">
-                                    <h5>Form C1 :</h5>
-                                    <div class="click-zoom">
-                                        <label>
-                                            <input type="checkbox" />
-                                            <img id="c1" src="" alt="Form C1"
-                                                style="display:block; margin:0 auto;width:100%">
-                                        </label>
+                                <div class="col-lg-12 col-sm-12 mt-5">
+                                    <div id="carouselExample" class="carousel slide mt-5">
+                                        <h5>Form C1 :</h5>
+                                        <div class="carousel-inner" id="carouselContent">
+
+                                        </div>
+                                        <button class="carousel-control-prev" type="button"
+                                            data-bs-target="#carouselExample" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button"
+                                            data-bs-target="#carouselExample" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -271,7 +279,7 @@
             });
         });
 
-        $('#viewResult').on('click', function() {
+        $('#viewResult').on('click', function(event) {
             event.preventDefault();
 
             var selectedTps = $('#tps').val();
@@ -289,9 +297,7 @@
                 },
                 dataType: 'json',
                 success: function(response) {
-
                     if ($.isEmptyObject(response.pollingResult)) {
-                        // Tampilkan pesan alert jika tidak ada data
                         alert('Data belum diinput.');
                         return;
                     }
@@ -302,42 +308,60 @@
                     var candidateVotes = JSON.parse(pollingResult.candidate_votes);
 
                     var tableBody = $('#resultTable tbody');
+                    var c1Images = response.pollingResult.c1 ? JSON.parse(response.pollingResult.c1) :
+                    [];
+                    var carouselContent = $('#carouselContent'); // Elemen carousel-inner
 
-                    var c1ImageUrl =
-                        "{{ asset('storage/upload/c1/') }}" + '/' + response.pollingResult.c1
-                    $('#c1').attr('src', c1ImageUrl);
-
+                    // Kosongkan tabel hasil dan carousel sebelum mengisi ulang
                     tableBody.empty();
+                    carouselContent.empty();
 
+                    if (c1Images.length === 0) {
+                        // Tampilkan pesan jika tidak ada gambar C1
+                        carouselContent.append(`
+            <div class="carousel-item active">
+                <p class="text-center">Tidak ada gambar C1 yang tersedia.</p>
+            </div>
+        `);
+                    } else {
+                        c1Images.forEach(function(image, index) {
+                            var isActive = index === 0 ? 'active' : ''; // Gambar pertama aktif
+                            var imageUrl = "{{ asset('storage/upload/c1/') }}" + '/' + image;
+
+                            carouselContent.append(`
+                <div class="carousel-item ${isActive}">
+                    <img src="${imageUrl}" class="d-block w-100" alt="Form C1">
+                </div>
+            `);
+                        });
+                    }
+
+                    // Tampilkan data kandidat dan suara
                     Object.keys(candidateVotes).forEach(function(candidateNumber) {
-                        // Konversi nomor urut menjadi string
                         var candidateNumberString = candidateNumber.toString();
-
-                        // Mendapatkan data kandidat untuk nomor urut
                         var candidateData = candidates[candidateNumberString];
 
-                        var candidateName = candidateData.regional_head + ' - ' +
-                            candidateData.deputy_head;
+                        var candidateName = candidateData.regional_head + ' - ' + candidateData
+                            .deputy_head;
                         var candidateVote = candidateVotes[candidateNumber];
 
                         var newRow = $('<tr>');
                         newRow.append('<td>' + candidateData.number +
                             '</td>'); // Nomor urut paslon
                         newRow.append('<td>' + candidateName + '</td>'); // Nama paslon
-                        newRow.append('<td>' + candidateVote +
-                            '</td>'); // Jumlah suara paslon
+                        newRow.append('<td>' + candidateVote + '</td>'); // Jumlah suara paslon
                         tableBody.append(newRow);
                     });
 
-
+                    // Tambahkan baris untuk suara tidak sah
                     var invalidRow = $('<tr>');
                     invalidRow.append('<td colspan="2">Suara Tidak Sah</td>');
-                    invalidRow.append('<td>' + response.pollingResult.invalid_votes + '</td>');
+                    invalidRow.append('<td>' + pollingResult.invalid_votes + '</td>');
                     tableBody.append(invalidRow);
 
-                    // Menampilkan status verifikasi
+                    // Tampilkan status verifikasi
                     var statusBadge;
-                    var status = response.pollingResult.status;
+                    var status = pollingResult.status;
 
                     if (status == 0) {
                         statusBadge = '<span class="badge bg-label-danger">Belum Diverifikasi</span>';
@@ -356,25 +380,24 @@
 
                     @can('edit polling')
                         if (status == 2) {
-                            let pollingResultId = response.pollingResult.id;
+                            let pollingResultId = pollingResult.id;
                             let editUrl = "{{ route('admin.polling.edit', ':id') }}".replace(':id',
                                 pollingResultId);
                             let editButton = "<a href='" + editUrl +
                                 "' class='btn btn-warning btn-edit'><i class='bx bx-edit-alt'></i> Edit</a>";
-                            $('#status').append(' ' +
-                                editButton); // Append tombol edit setelah status badge
+                            $('#status').append(' ' + editButton);
                         }
                     @endcan
 
-                    // Menampilkan hasil suara
+                    // Tampilkan carousel
                     $('#form').show();
                 },
                 error: function(xhr, status, error) {
-                    // Menangani kesalahan jika terjadi
                     alert(xhr.responseText);
                 }
             });
         });
+
 
         // Event listener untuk tombol Terima
         $('#form').on('click', '.btn-accept', function(event) {

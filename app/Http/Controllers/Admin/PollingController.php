@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class PollingController extends Controller implements HasMiddleware
@@ -98,6 +99,7 @@ class PollingController extends Controller implements HasMiddleware
     public function store(StorePollingRequest $request)
     {
         try {
+            DB::beginTransaction();
             $attr = $request->validated();
             $user = Auth::user();
             $pollingstation = PollingStation::find($attr['polling_station_id']);
@@ -108,17 +110,27 @@ class PollingController extends Controller implements HasMiddleware
                 ], 403);
             }
 
-            if ($request->hasFile('c1') && $request->file('c1')->isValid()) {
-                $filename = $request->file('c1')->hashName();
-                $request->file('c1')->storeAs('upload/c1/', $filename, 'public');
-                $attr['c1'] = $filename;
+            $c1 = [];
+            if ($request->hasFile('c1')) {
+                foreach ($request->file('c1') as $file) {
+                    if ($file->isValid()) {
+                        $filename = $file->hashName();
+                        $file->storeAs('upload/c1/', $filename, 'public');
+                        $c1[] = $filename;
+                    }
+                }
             }
 
+            $attr['c1'] = json_encode($c1);
             $attr['candidate_votes'] = json_encode($attr['candidate_votes']);
+
             Polling::create($attr);
+
+            DB::commit();
 
             return redirect()->back()->with('success', 'Data Berhasil Ditambah');
         } catch (\Throwable $th) {
+            DB::rollback();
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $th->getMessage()]);
         }
     }
@@ -148,27 +160,46 @@ class PollingController extends Controller implements HasMiddleware
         try {
             $attr = $request->validated();
 
-            if ($request->file('c1') && $request->file('c1')->isValid()) {
-
+            if ($request->hasFile('c1') && is_array($request->file('c1'))) {
                 $path = storage_path('app/public/upload/c1/');
-                $filename = $request->file('c1')->hashName();
 
-                if (!file_exists($path)) {
-                    mkdir($path, 0777, true);
+                // Inisialisasi array untuk menyimpan nama file gambar
+                $filenames = [];
+
+                // Cek jika ada file yang diupload
+                foreach ($request->file('c1') as $file) {
+                    if ($file->isValid()) { // Pastikan file valid
+                        $filename = $file->hashName();
+
+                        // Simpan file di folder yang sesuai
+                        if (!file_exists($path)) {
+                            mkdir($path, 0777, true); // Membuat direktori jika belum ada
+                        }
+
+                        $file->storeAs('upload/c1/', $filename, 'public');
+                        $filenames[] = $filename; // Menambahkan nama file ke array
+                    }
                 }
 
-                $request->file('c1')->storeAs('upload/c1/', $filename, 'public');
-
-                // delete c1 from storage
-                if ($polling->c1 != null && file_exists($path . $polling->c1)) {
-                    unlink($path . $polling->c1);
+                // Hapus gambar lama jika ada
+                if ($polling->c1 != null) {
+                    $oldImages = json_decode($polling->c1); // Mengambil nama gambar lama
+                    foreach ($oldImages as $image) {
+                        $oldImagePath = $path . $image;
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath); // Menghapus file lama
+                        }
+                    }
                 }
 
-                $attr['c1'] = $filename;
+                // Simpan nama file gambar dalam bentuk JSON di database
+                $attr['c1'] = json_encode($filenames);
             }
 
+            // Update status polling
             $attr['status'] = 0;
 
+            // Update data polling
             $polling->update($attr);
 
             return redirect()
@@ -178,6 +209,8 @@ class PollingController extends Controller implements HasMiddleware
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $th->getMessage()]);
         }
     }
+
+
 
     /**
      * Remove the specified resource from storage.

@@ -19,7 +19,9 @@ class Polling extends Model
     public function status()
     {
         if ($this->status == 1) {
-            return 'SUDAH DIVERIFIKASI';
+            return 'SUDAH DIVERIFIKASI - DITERIMA';
+        } elseif ($this->status == 2) {
+            return 'SUDAH DIVERIFIKASI - DITOLAK';
         } else {
             return 'BELUM DIVERIFIKASI';
         }

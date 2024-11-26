@@ -89,7 +89,7 @@
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12">
                                     <h5>Tambah Perolehan Suara :</h5>
-                                    <form class="my-4" id="pollingForm">
+                                    <form class="my-4" id="pollingForm" enctype="multipart/form-data">
                                         <input type="hidden" id="selectedTps" name="polling_station_id">
                                         <input type="hidden" id="selectedPemilihan" name="type">
                                         <div id="candidateInputs"></div>
@@ -108,10 +108,11 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Form C1</label>
-                                            <input type="file" name="c1"
+                                            <input type="file" name="c1[]"
                                                 class="form-control @error('c1')
                                                 is-invalid
-                                            @enderror">
+                                            @enderror"
+                                                multiple>
                                             @error('c1')
                                                 <div class="small text-danger">
                                                     {{ $message }}

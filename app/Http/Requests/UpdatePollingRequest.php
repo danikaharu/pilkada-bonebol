@@ -26,7 +26,8 @@ class UpdatePollingRequest extends FormRequest
             'type' => 'in:1,2',
             'candidate_votes.*' => 'required',
             'invalid_votes' => 'required',
-            'c1' => 'nullable|image|max:2048',
+            'c1' => 'nullable',
+            'c1.*' => 'nullable|image|max:2048',
             'status' => 'in:0,1'
         ];
     }

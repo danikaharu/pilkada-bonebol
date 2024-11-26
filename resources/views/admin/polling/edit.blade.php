@@ -69,33 +69,17 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col-md-4 text-center">
-                                                    @if ($polling->c1 == null)
-                                                        <img src="https://via.placeholder.com/350?text=No+Image+Avaiable"
-                                                            alt="C1" class="rounded mb-2 mt-2" alt="C1"
-                                                            width="200" height="150" style="object-fit: cover">
-                                                    @else
-                                                        <img src="{{ asset('storage/upload/c1/' . $polling->c1) }}"
-                                                            alt="C1" class="rounded mb-2 mt-2" width="400"
-                                                            height="300" style="object-fit: cover">
-                                                    @endif
-                                                </div>
+                                            <div class="mb-3">
+                                                <label for="c1">{{ __('C1') }}</label>
+                                                <input type="file" name="c1[]"
+                                                    class="form-control @error('c1') is-invalid @enderror" multiple>
 
-                                                <div class="col-md-8">
-                                                    <div class="form-group ms-3">
-                                                        <label for="c1">{{ __('C1') }}</label>
-                                                        <input type="file" name="c1"
-                                                            class="form-control @error('c1') is-invalid @enderror">
-
-                                                        @error('c1')
-                                                            <div class="invalid-feedback">
-                                                                <i class="bx bx-radio-circle"></i>
-                                                                {{ $message }}
-                                                            </div>
-                                                        @enderror
+                                                @error('c1')
+                                                    <div class="invalid-feedback">
+                                                        <i class="bx bx-radio-circle"></i>
+                                                        {{ $message }}
                                                     </div>
-                                                </div>
+                                                @enderror
                                             </div>
                                         </div>
                                         <button class="btn btn-secondary"><i class='bx bx-reset'></i> Reset</button>
