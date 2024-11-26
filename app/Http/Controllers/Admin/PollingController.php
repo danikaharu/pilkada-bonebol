@@ -22,7 +22,6 @@ class PollingController extends Controller implements HasMiddleware
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('create polling'), only: ['create', 'store']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('edit polling'), only: ['edit', 'update']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete polling'), only: ['destroy']),
-            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result polling'), only: ['graphic']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('verify polling'), only: ['verify']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('export polling'), only: ['export']),
             new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('result all'), only: ['resultAll']),
