@@ -245,7 +245,7 @@ class PollingController extends Controller implements HasMiddleware
         $type = $request->input('type');
         $userSubdistrict = Auth::user()->subdistrict_id;
 
-        if ($subdistrict_id != $userSubdistrict) {
+        if (Auth::user()->hasRole('Operator') && $subdistrict_id != $userSubdistrict) {
             return response()->json([
                 'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
             ], 403);
@@ -271,7 +271,7 @@ class PollingController extends Controller implements HasMiddleware
         $type = $request->input('type');
         $userSubdistrict = Auth::user()->subdistrict_id;
 
-        if ($subdistrict_id != $userSubdistrict) {
+        if (Auth::user()->hasRole('Operator') && $subdistrict_id != $userSubdistrict) {
             return response()->json([
                 'Anda tidak memiliki akses ke hasil pemilihan suara untuk TPS ini.'
             ], 403);
