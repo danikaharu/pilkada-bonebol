@@ -355,7 +355,7 @@ class PollingController extends Controller implements HasMiddleware
         // Ambil polling berdasarkan tipe yang dipilih (gubernur atau kepala daerah)
         if ($type) {
             // Ambil polling yang sesuai dengan type
-            $pollings = Polling::where('type', $type)->get();
+            $pollings = Polling::where('type', $type)->where('status', 1)->get();
         } else {
             // Ambil semua polling jika type tidak dipilih
             $pollings = Polling::all();
@@ -427,6 +427,7 @@ class PollingController extends Controller implements HasMiddleware
             $pollings = Polling::whereHas('polling_station', function ($query) use ($villagesId) {
                 $query->where('village_id', $villagesId);
             })->where('type', $type)
+                ->where('status', 1)
                 ->get();
         } else {
             // Ambil semua polling jika type tidak dipilih
@@ -497,6 +498,7 @@ class PollingController extends Controller implements HasMiddleware
             $pollings = Polling::whereHas('polling_station.village.subdistrict', function ($query) use ($subdistrictsId) {
                 $query->where('id', $subdistrictsId); // ID kecamatan
             })->where('type', $type)
+                ->where('status', 1)
                 ->get();
         } else {
             // Ambil semua polling jika type tidak dipilih
@@ -560,6 +562,7 @@ class PollingController extends Controller implements HasMiddleware
             $pollings = Polling::whereHas('polling_station.village.subdistrict.electoral_district', function ($query) use ($electoraldistrictsId) {
                 $query->where('id', $electoraldistrictsId); // ID kecamatan
             })->where('type', $type)
+                ->where('status', 1)
                 ->get();
         } else {
             // Ambil semua polling jika type tidak dipilih
