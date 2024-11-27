@@ -84,6 +84,9 @@
                                 return opts.w.globals.labels[opts.seriesIndex] + ': ' + val
                                     .toFixed(1) + '%';
                             },
+                            style: {
+                                colors: ['#000']
+                            }
                         },
                     };
 
