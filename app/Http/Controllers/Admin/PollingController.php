@@ -392,9 +392,9 @@ class PollingController extends Controller implements HasMiddleware
         ];
 
         // Loop melalui kandidat untuk menambahkan total suara
-        foreach ($candidates as $candidate) {
+        foreach ($candidates as $index => $candidate) {
             // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
-            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $candidateVotes = $totalVotes[$index] ?? 0;
             $data['candidates'][] = [
                 'candidate_no' => $candidate->number, // Nomor urut kandidat
                 'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
@@ -464,9 +464,9 @@ class PollingController extends Controller implements HasMiddleware
         ];
 
         // Loop melalui kandidat untuk menambahkan total suara
-        foreach ($candidates as $candidate) {
+        foreach ($candidates as $index => $candidate) {
             // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
-            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $candidateVotes = $totalVotes[$index] ?? 0;
             $data['candidates'][] = [
                 'candidate_no' => $candidate->number, // Nomor urut kandidat
                 'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
@@ -534,9 +534,9 @@ class PollingController extends Controller implements HasMiddleware
         ];
 
         // Loop melalui kandidat untuk menambahkan total suara
-        foreach ($candidates as $candidate) {
+        foreach ($candidates as $index => $candidate) {
             // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
-            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $candidateVotes = $totalVotes[$index] ?? 0;
             $data['candidates'][] = [
                 'candidate_no' => $candidate->number, // Nomor urut kandidat
                 'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
@@ -597,9 +597,9 @@ class PollingController extends Controller implements HasMiddleware
         ];
 
         // Loop melalui kandidat untuk menambahkan total suara
-        foreach ($candidates as $candidate) {
+        foreach ($candidates as $index => $candidate) {
             // Pastikan suara kandidat dijumlahkan berdasarkan ID yang benar
-            $candidateVotes = $totalVotes[$candidate->id - 1] ?? 0;
+            $candidateVotes = $totalVotes[$index] ?? 0;
             $data['candidates'][] = [
                 'candidate_no' => $candidate->number, // Nomor urut kandidat
                 'candidate_name' => $candidate->getCandidateAttribute(), // Nama kandidat
@@ -639,8 +639,8 @@ class PollingController extends Controller implements HasMiddleware
         $candidateNumbers = $candidates->pluck('number')->toArray();
 
         $totalVotesFormatted = [];
-        foreach ($candidates as $candidate) {
-            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        foreach ($candidates as $index => $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$index] ?? 0;
         }
 
         if ($request->ajax()) {
@@ -696,8 +696,8 @@ class PollingController extends Controller implements HasMiddleware
         $candidateNumbers = $candidates->pluck('number')->toArray();
 
         $totalVotesFormatted = [];
-        foreach ($candidates as $candidate) {
-            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        foreach ($candidates as $index => $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$index] ?? 0;
         }
 
         if ($request->ajax()) {
@@ -758,8 +758,8 @@ class PollingController extends Controller implements HasMiddleware
         $candidateNumbers = $candidates->pluck('number')->toArray();
 
         $totalVotesFormatted = [];
-        foreach ($candidates as $candidate) {
-            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        foreach ($candidates as $index => $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$index] ?? 0;
         }
 
         if ($request->ajax()) {
@@ -822,8 +822,8 @@ class PollingController extends Controller implements HasMiddleware
         $candidateNumbers = $candidates->pluck('number')->toArray();
 
         $totalVotesFormatted = [];
-        foreach ($candidates as $candidate) {
-            $totalVotesFormatted[] = $totalVotes[$candidate->number - 1] ?? 0;
+        foreach ($candidates as $index => $candidate) {
+            $totalVotesFormatted[] = $totalVotes[$index] ?? 0;
         }
 
         if ($request->ajax()) {
