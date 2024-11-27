@@ -34,7 +34,7 @@ class StorePollingRequest extends FormRequest
             'candidate_votes.*' => 'required|numeric',
             'invalid_votes' => 'required|numeric',
             'c1' => 'required',
-            'c1.*' => 'required|image|max:3048',
+            'c1.*' => 'required|image|max:10000',
             'status' => 'in:0,1'
         ];
     }
