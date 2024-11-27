@@ -29,7 +29,7 @@ class StorePollingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'polling_station_id' => 'exists:polling_stations,id|unique:pollings,polling_station_id',
+            'polling_station_id' => 'exists:polling_stations,id',
             'type' => 'in:1,2',
             'candidate_votes.*' => 'required|numeric',
             'invalid_votes' => 'required|numeric',
