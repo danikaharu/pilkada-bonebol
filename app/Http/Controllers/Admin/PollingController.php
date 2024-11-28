@@ -326,8 +326,11 @@ class PollingController extends Controller implements HasMiddleware
     {
         $polling_station_id = $request->input('polling_station_id');
         $status = $request->input('status');
+        $type = $request->input('type');
 
-        $polling = Polling::where('polling_station_id', $polling_station_id)->first();
+        $polling = Polling::where('polling_station_id', $polling_station_id)
+            ->where('type', $type)
+            ->first();
 
         $polling->update([
             'status' => $status

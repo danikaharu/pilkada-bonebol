@@ -404,13 +404,15 @@
             event.preventDefault();
 
             var selectedTps = $('#tps').val();
+            var selectedType = $('#type').val();
 
             $.ajax({
                 url: "{{ route('admin.polling.verify') }}",
                 type: "POST",
                 data: {
                     polling_station_id: selectedTps,
-                    status: 1, // Status 1 untuk diterima
+                    status: 1,
+                    type: selectedType,
                     _token: '{{ csrf_token() }}'
                 },
                 dataType: 'json',
