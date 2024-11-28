@@ -76,6 +76,7 @@ class PollingController extends Controller implements HasMiddleware
                 ->addColumn('status', function ($row) {
                     return $row->status();
                 })
+                ->addColumn('action', 'admin.polling.include.action')
                 ->make(true);
         }
 
@@ -139,7 +140,8 @@ class PollingController extends Controller implements HasMiddleware
      */
     public function show(Polling $polling)
     {
-        //
+        $candidates = Candidate::where('type', $polling->type)->get();
+        return view('admin.polling.show', compact('polling', 'candidates'));
     }
 
     /**
@@ -286,6 +288,7 @@ class PollingController extends Controller implements HasMiddleware
         // Mengambil hasil pemilihan dan kandidat
         $pollingResult = Polling::where('polling_station_id', $polling_station_id)
             ->where('type', $type)
+            ->where('status', 1)
             ->first();
 
         $candidates = Candidate::where('type', $type)->get();
@@ -322,15 +325,9 @@ class PollingController extends Controller implements HasMiddleware
         ]);
     }
 
-    public function verify(Request $request)
+    public function verify(Request $request, Polling $polling)
     {
-        $polling_station_id = $request->input('polling_station_id');
         $status = $request->input('status');
-        $type = $request->input('type');
-
-        $polling = Polling::where('polling_station_id', $polling_station_id)
-            ->where('type', $type)
-            ->first();
 
         $polling->update([
             'status' => $status

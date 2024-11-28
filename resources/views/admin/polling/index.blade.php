@@ -40,6 +40,7 @@
                                         <th>TPS</th>
                                         <th>Jenis Pemilihan</th>
                                         <th>Status</th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -87,6 +88,9 @@
                     },
                     {
                         data: 'status',
+                    },
+                    {
+                        data: 'action',
                     },
                 ],
             });

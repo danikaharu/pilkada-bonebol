@@ -122,16 +122,6 @@
                                         <tbody>
                                         </tbody>
                                     </table>
-                                    <div id="status" class="mt-2"></div>
-                                    @can('verify polling')
-                                        <form action="">
-                                            <button type="submit" class="btn btn-success btn-accept"><i
-                                                    class='bx bx-check-square'></i>
-                                                Terima</button>
-                                            <button type="submit" class="btn btn-danger btn-reject"> <i
-                                                    class='bx bxs-x-square'></i>Tolak</button>
-                                        </form>
-                                    @endcan
                                 </div>
                                 <div class="col-lg-12 col-sm-12 mt-5">
                                     <div id="carouselExample" class="carousel slide mt-5">
@@ -359,97 +349,11 @@
                     invalidRow.append('<td>' + pollingResult.invalid_votes + '</td>');
                     tableBody.append(invalidRow);
 
-                    // Tampilkan status verifikasi
-                    var statusBadge;
-                    var status = pollingResult.status;
-
-                    if (status == 0) {
-                        statusBadge = '<span class="badge bg-label-danger">Belum Diverifikasi</span>';
-                    } else if (status == 1) {
-                        statusBadge =
-                            '<span class="badge bg-label-success">Sudah Diverifikasi - Diterima</span>';
-                        $('#form form').hide();
-                    } else if (status == 2) {
-                        statusBadge =
-                            '<span class="badge bg-label-danger">Sudah Diverifikasi - Ditolak</span>';
-                        $('#form form').hide();
-                    } else {
-                        statusBadge = '<span class="badge bg-label-info">Status Tidak Diketahui</span>';
-                    }
-                    $('#status').html('Status: ' + statusBadge);
-
-                    @can('edit polling')
-                        if (status == 2) {
-                            let pollingResultId = pollingResult.id;
-                            let editUrl = "{{ route('admin.polling.edit', ':id') }}".replace(':id',
-                                pollingResultId);
-                            let editButton = "<a href='" + editUrl +
-                                "' class='btn btn-warning btn-edit'><i class='bx bx-edit-alt'></i> Edit</a>";
-                            $('#status').append(' ' + editButton);
-                        }
-                    @endcan
-
                     // Tampilkan carousel
                     $('#form').show();
                 },
                 error: function(xhr, status, error) {
                     alert(xhr.responseText);
-                }
-            });
-        });
-
-
-        // Event listener untuk tombol Terima
-        $('#form').on('click', '.btn-accept', function(event) {
-            event.preventDefault();
-
-            var selectedTps = $('#tps').val();
-            var selectedType = $('#type').val();
-
-            $.ajax({
-                url: "{{ route('admin.polling.verify') }}",
-                type: "POST",
-                data: {
-                    polling_station_id: selectedTps,
-                    status: 1,
-                    type: selectedType,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(response) {
-                    alert('Hasil perolehan suara diterima.');
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-
-                }
-            });
-        });
-
-        // Event listener untuk tombol Tolak
-        $('#form').on('click', '.btn-reject', function(event) {
-            event.preventDefault();
-
-            var selectedTps = $('#tps').val();
-            var selectedType = $('#type').val();
-
-            $.ajax({
-                url: "{{ route('admin.polling.verify') }}",
-                type: "POST",
-                data: {
-                    polling_station_id: selectedTps,
-                    status: 2,
-                    type: selectedType,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(response) {
-                    alert('Hasil perolehan suara ditolak.');
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
                 }
             });
         });
